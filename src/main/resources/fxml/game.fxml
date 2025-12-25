@@ -80,7 +80,7 @@
 
                 <Label text="Таблица очков" styleClass="panel-title">
                     <font>
-                        <Font name="Arial" size="16" weight="BOLD"/>
+                        <Font name="Arial" size="16" />
                     </font>
                 </Label>
 
@@ -95,7 +95,7 @@
 
                 <Label text="История ходов" styleClass="panel-title">
                     <font>
-                        <Font name="Arial" size="16" weight="BOLD"/>
+                        <Font name="Arial" size="16"/>
                     </font>
                 </Label>
 
@@ -105,7 +105,7 @@
 
                 <Label text="Игровой чат" styleClass="panel-title">
                     <font>
-                        <Font name="Arial" size="16" weight="BOLD"/>
+                        <Font name="Arial" size="16"/>
                     </font>
                 </Label>
 
