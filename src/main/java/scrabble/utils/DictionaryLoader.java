@@ -26,7 +26,7 @@ public class DictionaryLoader {
             String line;
             while ((line = reader.readLine()) != null) {
                 String word = line.trim().toUpperCase();
-                if (!word.isEmpty() && word.matches("^[A-Z]+$")) {
+                if (!word.isEmpty() && word.matches("^\"[A-Z]+\"$")) {
                     dictionary.add(word);
                     loadedCount++;
 
