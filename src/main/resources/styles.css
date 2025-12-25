@@ -1,0 +1,362 @@
+/* Основные стили */
+.root {
+    -fx-font-family: "Arial";
+    -fx-font-size: 14px;
+}
+
+/* Лобби */
+.root-pane {
+    -fx-background-color: linear-gradient(to bottom, #2c3e50, #34495e);
+}
+
+.header-box {
+    -fx-background-color: #1a252f;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0, 0, 2);
+    -fx-padding: 20 20 10 20;
+}
+
+.title-label {
+    -fx-text-fill: #ecf0f1;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.name-field, .server-field {
+    -fx-background-color: #ecf0f1;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-border-color: #bdc3c7;
+    -fx-border-width: 1;
+    -fx-padding: 5;
+}
+
+.connect-button {
+    -fx-background-color: #27ae60;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 20;
+    -fx-background-radius: 5;
+}
+
+.connect-button:hover {
+    -fx-background-color: #229954;
+}
+
+.connect-button:pressed {
+    -fx-background-color: #1e8449;
+}
+
+.disconnect-button {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 20;
+    -fx-background-radius: 5;
+}
+
+.disconnect-button:hover {
+    -fx-background-color: #c0392b;
+}
+
+.status-label {
+    -fx-text-fill: #f1c40f;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.room-creation-pane {
+    -fx-background-color: #ecf0f1;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-border-color: #bdc3c7;
+    -fx-border-width: 1;
+    -fx-padding: 20;
+}
+
+.room-info-pane {
+    -fx-background-color: #ecf0f1;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-border-color: #bdc3c7;
+    -fx-border-width: 1;
+    -fx-padding: 20;
+}
+
+.section-label {
+    -fx-text-fill: #2c3e50;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+}
+
+.current-room-label {
+    -fx-text-fill: #2980b9;
+    -fx-font-weight: bold;
+    -fx-font-size: 18px;
+}
+
+.rooms-list, .players-list {
+    -fx-background-color: white;
+    -fx-border-color: #bdc3c7;
+    -fx-border-radius: 3;
+    -fx-control-inner-background: white;
+}
+
+.chat-area {
+    -fx-font-family: "Monospaced";
+    -fx-font-size: 12px;
+    -fx-control-inner-background: #f8f9fa;
+    -fx-border-color: #bdc3c7;
+}
+
+/* Игровое окно */
+.game-root {
+    -fx-background-color: linear-gradient(to bottom, #1c2833, #2c3e50);
+}
+
+.game-header {
+    -fx-background-color: #34495e;
+    -fx-border-color: #2c3e50;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 10 20;
+}
+
+.room-name {
+    -fx-text-fill: #ecf0f1;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.turn-indicator {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.my-turn {
+    -fx-text-fill: #2ecc71;
+}
+
+.opponent-turn {
+    -fx-text-fill: #e74c3c;
+}
+
+.player-box {
+    -fx-padding: 10;
+    -fx-background-color: #f0f0f0;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.player-box.current-turn {
+    -fx-background-color: #e0f7fa;
+    -fx-border-color: #00bcd4;
+    -fx-border-width: 2;
+}
+
+.player-name {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.player-name.current-user {
+    -fx-text-fill: #3498db;
+}
+
+.player-score {
+    -fx-font-size: 12px;
+    -fx-text-fill: #7f8c8d;
+}
+
+.ready-status {
+    -fx-text-fill: #27ae60;
+    -fx-font-size: 11px;
+}
+
+.timer {
+    -fx-text-fill: #f39c12;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.score-display {
+    -fx-text-fill: #3498db;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.danger-button {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 15;
+    -fx-background-radius: 5;
+}
+
+.danger-button:hover {
+    -fx-background-color: #c0392b;
+}
+
+.neutral-button {
+    -fx-background-color: #7f8c8d;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 15;
+    -fx-background-radius: 5;
+}
+
+.neutral-button:hover {
+    -fx-background-color: #6c7b7d;
+}
+
+.game-board-container {
+    -fx-background-color: #2c3e50;
+    -fx-padding: 20;
+}
+
+.board-wrapper {
+    -fx-background-color: #1c2833;
+    -fx-border-color: #34495e;
+    -fx-border-width: 2;
+    -fx-border-radius: 5;
+    -fx-padding: 10;
+}
+
+.action-button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 5;
+}
+
+.action-button:hover {
+    -fx-background-color: #2980b9;
+}
+
+.primary-button {
+    -fx-background-color: #2ecc71;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 30;
+    -fx-background-radius: 5;
+}
+
+.primary-button:hover {
+    -fx-background-color: #27ae60;
+}
+
+.primary-button:disabled {
+    -fx-background-color: #7f8c8d;
+}
+
+.player-rack {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0, 0, 2);
+}
+
+.game-info-panel {
+    -fx-background-color: #34495e;
+    -fx-padding: 20;
+}
+
+.panel-title {
+    -fx-text-fill: #ecf0f1;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.score-table {
+    -fx-background-color: transparent;
+    -fx-border-color: #2c3e50;
+}
+
+.score-table .column-header {
+    -fx-background-color: #2c3e50;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.score-table .table-row-cell {
+    -fx-background-color: #2c3e50;
+    -fx-text-fill: #ecf0f1;
+}
+
+.score-table .table-row-cell:odd {
+    -fx-background-color: #1c2833;
+}
+
+.moves-history {
+    -fx-background-color: #2c3e50;
+    -fx-text-fill: #ecf0f1;
+    -fx-border-color: #2c3e50;
+    -fx-control-inner-background: #2c3e50;
+}
+
+.game-chat {
+    -fx-background-color: #2c3e50;
+    -fx-text-fill: #ecf0f1;
+    -fx-border-color: #2c3e50;
+    -fx-font-family: "Monospaced";
+    -fx-control-inner-background: #2c3e50;
+}
+
+.game-status-bar {
+    -fx-background-color: #1c2833;
+    -fx-border-color: #2c3e50;
+    -fx-border-width: 1 0 0 0;
+    -fx-padding: 5 20;
+}
+
+.game-status {
+    -fx-text-fill: #bdc3c7;
+    -fx-font-size: 12px;
+}
+
+.tiles-counter {
+    -fx-text-fill: #f39c12;
+    -fx-font-weight: bold;
+}
+
+/* ScrollBar стили */
+.scroll-bar:vertical,
+.scroll-bar:horizontal {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:vertical .track,
+.scroll-bar:horizontal .track {
+    -fx-background-color: #2c3e50;
+    -fx-border-color: #34495e;
+}
+
+.scroll-bar:vertical .thumb,
+.scroll-bar:horizontal .thumb {
+    -fx-background-color: #34495e;
+    -fx-background-radius: 5;
+}
+
+.scroll-bar:vertical .thumb:hover,
+.scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: #4a6572;
+}
+
+/* Alert диалоги */
+.dialog-pane {
+    -fx-background-color: #34495e;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: #2c3e50;
+}
+
+.dialog-pane .content {
+    -fx-text-fill: #ecf0f1;
+}
+
+.dialog-pane .button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.dialog-pane .button:hover {
+    -fx-background-color: #2980b9;
+}
