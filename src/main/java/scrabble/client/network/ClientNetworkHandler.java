@@ -1,3 +1,5 @@
+// scrabble/client/network/ClientNetworkHandler.java
+
 package scrabble.client.network;
 
 import scrabble.protocol.Message;
@@ -17,6 +19,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import com.google.gson.reflect.TypeToken;
+import scrabble.protocol.ProtocolParser;
 
 public class ClientNetworkHandler {
     private SocketChannel socketChannel;
@@ -55,8 +58,7 @@ public class ClientNetworkHandler {
             startNetworkThreads();
 
             // Отправляем сообщение о подключении
-            Message connectMsg = new Message(MessageType.CONNECT);
-            connectMsg.put("playerName", playerName);
+            Message connectMsg = ProtocolParser.createConnectMessage(playerName);
             sendMessage(connectMsg);
 
             Platform.runLater(() -> {

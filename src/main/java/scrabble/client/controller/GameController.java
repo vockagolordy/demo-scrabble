@@ -1,3 +1,5 @@
+// scrabble/client/controller/GameController.java
+
 package scrabble.client.controller;
 
 import javafx.fxml.FXML;
@@ -17,6 +19,7 @@ import scrabble.client.view.components.RackView;
 import scrabble.client.view.components.TileView;
 import scrabble.protocol.Message;
 import scrabble.protocol.MessageType;
+import scrabble.protocol.ProtocolParser;
 import scrabble.utils.TileBag;
 import java.util.*;
 
@@ -394,7 +397,7 @@ public class GameController {
         int col = firstPos[1];
 
         // Отправляем ход на сервер
-        Message moveMsg = new Message(MessageType.PLAYER_MOVE);
+        Message moveMsg = ProtocolParser.createPlayerMoveMessage(word, row, col, horizontal, tileIds.toArray(new String[0]));
         moveMsg.put("word", word);
         moveMsg.put("row", row);
         moveMsg.put("col", col);
@@ -470,8 +473,7 @@ public class GameController {
 
     @FXML
     private void handleSkipTurn() {
-        Message skipMsg = new Message(MessageType.PLAYER_MOVE);
-        skipMsg.put("action", "skip");
+        Message skipMsg = ProtocolParser.createSkipTurnMessage();
 
         if (networkHandler != null) {
             networkHandler.sendMessage(skipMsg);
@@ -499,8 +501,7 @@ public class GameController {
 
         List<String> tileIds = new ArrayList<>(selectedTilesForExchange);
 
-        Message exchangeMsg = new Message(MessageType.TILES_EXCHANGE);
-        exchangeMsg.put("tiles", tileIds);
+        Message exchangeMsg = ProtocolParser.createTilesExchangeMessage(tileIds);
 
         if (networkHandler != null) {
             networkHandler.sendMessage(exchangeMsg);
@@ -519,8 +520,7 @@ public class GameController {
     private void handleGameChat() {
         String message = gameChatInput.getText().trim();
         if (!message.isEmpty() && networkHandler != null) {
-            Message chatMsg = new Message(MessageType.CHAT_MESSAGE);
-            chatMsg.put("content", message);
+            Message chatMsg = ProtocolParser.createChatMessage(message);
             networkHandler.sendMessage(chatMsg);
             gameChatInput.clear();
             statusLabel.setText("Сообщение отправлено");
@@ -535,8 +535,7 @@ public class GameController {
         confirm.setContentText("Это действие завершит игру для вас.");
 
         if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
-            Message surrenderMsg = new Message(MessageType.DISCONNECT);
-            surrenderMsg.put("action", "surrender");
+            Message surrenderMsg = ProtocolParser.createSurrenderMessage();
 
             if (networkHandler != null) {
                 networkHandler.sendMessage(surrenderMsg);
@@ -563,7 +562,7 @@ public class GameController {
         confirm.setContentText("Вы покинете текущую игру.");
 
         if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
-            Message leaveMsg = new Message(MessageType.LEAVE_ROOM);
+            Message leaveMsg = ProtocolParser.createLeaveRoomMessage();
 
             if (networkHandler != null) {
                 networkHandler.sendMessage(leaveMsg);

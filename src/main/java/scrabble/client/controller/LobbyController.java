@@ -1,3 +1,5 @@
+// scrabble/client/controller/LobbyController.java
+
 package scrabble.client.controller;
 
 import javafx.fxml.FXML;
@@ -10,6 +12,8 @@ import scrabble.client.model.ClientModel;
 import scrabble.client.network.ClientNetworkHandler;
 import scrabble.protocol.Message;
 import scrabble.protocol.MessageType;
+import scrabble.protocol.ProtocolParser;
+
 import java.io.IOException;
 
 public class LobbyController {
@@ -117,9 +121,7 @@ public class LobbyController {
             return;
         }
 
-        Message message = new Message(MessageType.CREATE_ROOM);
-        message.put("roomName", roomName);
-        message.put("maxPlayers", Integer.parseInt(maxPlayers));
+        Message message = ProtocolParser.createCreateRoomMessage(roomName, Integer.parseInt(maxPlayers));
 
         if (networkHandler != null) {
             networkHandler.sendMessage(message);
@@ -136,8 +138,7 @@ public class LobbyController {
             if (parts.length > 0) {
                 String roomId = parts[0];
 
-                Message message = new Message(MessageType.JOIN_ROOM);
-                message.put("roomId", roomId);
+                Message message = ProtocolParser.createJoinRoomMessage(roomId);
 
                 if (networkHandler != null) {
                     networkHandler.sendMessage(message);
@@ -151,7 +152,7 @@ public class LobbyController {
 
     @FXML
     private void handleReady() {
-        Message message = new Message(MessageType.PLAYER_READY);
+        Message message = ProtocolParser.createPlayerReadyMessage();
         if (networkHandler != null) {
             networkHandler.sendMessage(message);
             readyButton.setDisable(true);
@@ -160,7 +161,7 @@ public class LobbyController {
 
     @FXML
     private void handleLeaveRoom() {
-        Message message = new Message(MessageType.LEAVE_ROOM);
+        Message message = ProtocolParser.createLeaveRoomMessage();
         if (networkHandler != null) {
             networkHandler.sendMessage(message);
             currentRoomLabel.setText("Не в комнате");
@@ -174,7 +175,7 @@ public class LobbyController {
 
     @FXML
     private void handleStartGame() {
-        Message message = new Message(MessageType.GAME_START);
+        Message message = ProtocolParser.createGameStartMessage();
         if (networkHandler != null) {
             networkHandler.sendMessage(message);
         }
@@ -184,8 +185,7 @@ public class LobbyController {
     private void handleSendChat() {
         String messageText = chatInputField.getText().trim();
         if (!messageText.isEmpty() && networkHandler != null) {
-            Message message = new Message(MessageType.CHAT_MESSAGE);
-            message.put("content", messageText);
+            Message message = ProtocolParser.createChatMessage(messageText);
             networkHandler.sendMessage(message);
             chatInputField.clear();
         }

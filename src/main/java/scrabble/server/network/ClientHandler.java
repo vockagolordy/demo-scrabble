@@ -1,5 +1,8 @@
+// scrabble/server/network/ClientHandler.java
+
 package scrabble.server.network;
 
+import scrabble.protocol.ProtocolParser;
 import scrabble.server.model.ServerModel;
 import scrabble.server.model.GameRoom;
 import scrabble.protocol.Message;
@@ -8,6 +11,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ClientHandler {
@@ -67,9 +72,7 @@ public class ClientHandler {
     private void handleConnect(Message message) {
         this.playerName = (String) message.get("playerName");
 
-        Message response = new Message(MessageType.CONNECT);
-        response.put("playerId", clientId);
-        response.put("status", "connected");
+        Message response = ProtocolParser.createConnectResponseMessage(clientId, "connected");
         sendMessage(response);
 
         // Отправляем список доступных комнат
@@ -83,9 +86,7 @@ public class ClientHandler {
         GameRoom room = model.createRoom(roomName, maxPlayers, clientId);
         currentRoomId = room.getId();
 
-        Message response = new Message(MessageType.CREATE_ROOM);
-        response.put("roomId", room.getId());
-        response.put("roomName", room.getName());
+        Message response = ProtocolParser.createCreateRoomResponseMessage(room.getId(), room.getName());
         sendMessage(response);
 
         // Уведомляем всех о новом списке комнат
@@ -99,16 +100,11 @@ public class ClientHandler {
             currentRoomId = roomId;
             GameRoom room = model.getRoom(roomId);
 
-            Message response = new Message(MessageType.JOIN_ROOM);
-            response.put("roomId", roomId);
-            response.put("roomName", room.getName());
-            response.put("players", room.getPlayerIds());
+            Message response = ProtocolParser.createJoinRoomResponseMessage(roomId, room.getName(), new ArrayList<>(room.getPlayerIds()));
             sendMessage(response);
 
             // Уведомляем других игроков в комнате
-            Message notification = new Message(MessageType.PLAYER_JOINED);
-            notification.put("playerId", clientId);
-            notification.put("playerName", playerName);
+            Message notification = ProtocolParser.createPlayerJoinedMessage(clientId, playerName);
             broadcastToRoom(notification, clientId);
         } else {
             sendErrorMessage("Не удалось присоединиться к комнате");
@@ -119,8 +115,7 @@ public class ClientHandler {
         if (currentRoomId != null) {
             model.leaveRoom(currentRoomId, clientId);
 
-            Message notification = new Message(MessageType.PLAYER_LEFT);
-            notification.put("playerId", clientId);
+            Message notification = ProtocolParser.createPlayerLeftMessage(clientId);
             broadcastToRoom(notification, clientId);
 
             currentRoomId = null;
@@ -132,13 +127,12 @@ public class ClientHandler {
             GameRoom room = model.getRoom(currentRoomId);
             room.playerReady(clientId);
 
-            Message notification = new Message(MessageType.PLAYER_READY);
-            notification.put("playerId", clientId);
+            Message notification = ProtocolParser.createPlayerReadyNotificationMessage(clientId);
             broadcastToRoom(notification, null);
 
             // Если все готовы, уведомляем создателя
             if (room.allPlayersReady() && room.getCreatorId().equals(clientId)) {
-                Message readyNotification = new Message(MessageType.ALL_PLAYERS_READY);
+                Message readyNotification = ProtocolParser.createAllPlayersReadyMessage();
                 sendMessage(readyNotification);
             }
         }
@@ -149,8 +143,7 @@ public class ClientHandler {
             GameRoom room = model.getRoom(currentRoomId);
             if (room.getCreatorId().equals(clientId) && room.startGame()) {
                 // Отправляем начальное состояние игры всем игрокам
-                Message gameStartMsg = new Message(MessageType.GAME_START);
-                gameStartMsg.put("currentPlayer", room.getCurrentPlayerId());
+                Message gameStartMsg = ProtocolParser.createGameStartResponseMessage(room.getCurrentPlayerId());
                 broadcastToRoom(gameStartMsg, null);
             }
         }
@@ -169,20 +162,18 @@ public class ClientHandler {
                 String word = (String) message.get("word");
                 int score = word.length() * 10; // Упрощенный расчет
 
-                Message moveResult = new Message(MessageType.PLAYER_MOVE);
-                moveResult.put("playerId", clientId);
-                moveResult.put("word", word);
-                moveResult.put("score", score);
-                moveResult.put("row", message.get("row"));
-                moveResult.put("col", message.get("col"));
-                moveResult.put("horizontal", message.get("horizontal"));
+                int row = ((Double) message.get("row")).intValue();
+                int col = ((Double) message.get("col")).intValue();
+                boolean horizontal = (Boolean) message.get("horizontal");
+
+                Message moveResult = ProtocolParser.createPlayerMoveResultMessage(clientId, word, score, row, col, horizontal);
                 broadcastToRoom(moveResult, null);
 
                 // Передаем ход
                 room.nextTurn();
 
-                Message nextTurnMsg = new Message(MessageType.GAME_STATE);
-                nextTurnMsg.put("currentPlayer", room.getCurrentPlayerId());
+                Map<String, Object> gameData = new HashMap<>();
+                Message nextTurnMsg = ProtocolParser.createGameStateMessage(room.getCurrentPlayerId(), gameData);
                 broadcastToRoom(nextTurnMsg, null);
             } else {
                 sendErrorMessage("Сейчас не ваш ход");
@@ -193,8 +184,7 @@ public class ClientHandler {
     private void handleChatMessage(Message message) {
         if (currentRoomId != null) {
             String content = (String) message.get("content");
-            Message chatMsg = new Message(MessageType.CHAT_MESSAGE);
-            chatMsg.put("content", playerName + ": " + content);
+            Message chatMsg = ProtocolParser.createChatMessage(playerName + ": " + content);
             chatMsg.setSender(clientId);
             broadcastToRoom(chatMsg, null);
         }
@@ -219,14 +209,12 @@ public class ClientHandler {
     }
 
     private void sendRoomList() {
-        Message message = new Message(MessageType.ROOM_LIST);
-        message.put("rooms", model.getAvailableRooms());
+        Message message = ProtocolParser.createRoomListMessage(model.getAvailableRooms());
         sendMessage(message);
     }
 
     private void broadcastRoomListUpdate() {
-        Message message = new Message(MessageType.ROOM_LIST);
-        message.put("rooms", model.getAvailableRooms());
+        Message message = ProtocolParser.createRoomListMessage(model.getAvailableRooms());
 
         // Рассылаем всем подключенным клиентам
         for (ClientHandler handler : model.getAllClientHandlers()) {
@@ -251,8 +239,7 @@ public class ClientHandler {
     }
 
     private void sendErrorMessage(String error) {
-        Message errorMsg = new Message(MessageType.ERROR);
-        errorMsg.put("error", error);
+        Message errorMsg = ProtocolParser.createErrorMessage(error);
         sendMessage(errorMsg);
     }
 
