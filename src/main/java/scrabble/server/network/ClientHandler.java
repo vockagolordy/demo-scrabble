@@ -90,6 +90,7 @@ public class ClientHandler {
         sendMessage(response);
 
         // Уведомляем всех о новом списке комнат
+        sendRoomList();
         broadcastRoomListUpdate();
     }
 
@@ -224,7 +225,7 @@ public class ClientHandler {
         }
     }
 
-    public void sendMessage(Message message) {
+    public synchronized void sendMessage(Message message) {
         try {
             String json = message.toJson() + "\n";
             ByteBuffer buffer = ByteBuffer.wrap(json.getBytes(StandardCharsets.UTF_8));
@@ -232,6 +233,13 @@ public class ClientHandler {
             while (buffer.hasRemaining()) {
                 channel.write(buffer);
             }
+
+            try {
+                Thread.sleep(5);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
         } catch (IOException e) {
             System.err.println("Ошибка отправки сообщения клиенту " + clientId + ": " + e.getMessage());
             disconnect();
