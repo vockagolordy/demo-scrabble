@@ -1,3 +1,5 @@
+// scrabble/server/model/GameRoom.java
+
 package scrabble.server.model;
 
 import java.util.*;

@@ -1,3 +1,5 @@
+// scrabble/client/model/ClientModel.java
+
 package scrabble.client.model;
 
 import javafx.beans.property.*;

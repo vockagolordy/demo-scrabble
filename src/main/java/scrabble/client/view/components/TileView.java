@@ -1,3 +1,5 @@
+// scrabble/client/view/components/TileView.java
+
 package scrabble.client.view.components;
 
 import javafx.scene.layout.StackPane;

@@ -1,10 +1,9 @@
-/* Основные стили */
+/* /resources/styles.css */
 .root {
     -fx-font-family: "Arial";
     -fx-font-size: 14px;
 }
 
-/* Лобби */
 .root-pane {
     -fx-background-color: linear-gradient(to bottom, #2c3e50, #34495e);
 }

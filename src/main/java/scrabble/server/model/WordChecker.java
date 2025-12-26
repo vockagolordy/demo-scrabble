@@ -1,3 +1,5 @@
+// scrabble/server/model/WordChecker.java
+
 package scrabble.server.model;
 
 import scrabble.client.model.GameState;

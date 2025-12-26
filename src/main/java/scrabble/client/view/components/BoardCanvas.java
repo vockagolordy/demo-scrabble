@@ -1,3 +1,5 @@
+// scrabble/client/view/components/BoardCanvas.java
+
 package scrabble.client.view.components;
 
 import javafx.scene.canvas.Canvas;

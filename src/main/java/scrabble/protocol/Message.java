@@ -1,3 +1,5 @@
+// scrabble/protocol/Message.java
+
 package scrabble.protocol;
 
 import com.google.gson.Gson;

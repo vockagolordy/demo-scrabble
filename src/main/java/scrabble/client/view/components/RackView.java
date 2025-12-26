@@ -1,3 +1,5 @@
+// scrabble/client/view/components/RackView.java
+
 package scrabble.client.view.components;
 
 import javafx.scene.layout.HBox;

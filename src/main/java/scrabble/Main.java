@@ -1,3 +1,5 @@
+// scrabble/Main.java
+
 package scrabble;
 
 import javafx.application.Application;

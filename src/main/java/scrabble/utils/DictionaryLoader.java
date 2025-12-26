@@ -1,3 +1,5 @@
+// scrabble/utils/DictionaryLoader.java
+
 package scrabble.utils;
 
 import java.io.BufferedReader;

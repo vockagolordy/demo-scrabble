@@ -1,3 +1,5 @@
+// scrabble/client/model/GameState.java
+
 package scrabble.client.model;
 
 import java.util.ArrayList;

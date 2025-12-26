@@ -1,3 +1,5 @@
+// scrabble/server/controller/ServerController.java
+
 package scrabble.server.controller;
 
 import scrabble.server.model.ServerModel;
