@@ -1,3 +1,5 @@
+// scrabble/protocol/ProtocolParser.java
+
 package scrabble.protocol;
 
 import com.google.gson.Gson;
@@ -94,6 +96,74 @@ public class ProtocolParser {
         if (gameData != null) {
             msg.getData().putAll(gameData);
         }
+        return msg;
+    }
+
+    public static Message createSurrenderMessage() {
+        Message msg = new Message(MessageType.DISCONNECT);
+        msg.put("action", "surrender");
+        return msg;
+    }
+
+    public static Message createConnectResponseMessage(String playerId, String status) {
+        Message msg = new Message(MessageType.CONNECT);
+        msg.put("playerId", playerId);
+        msg.put("status", status);
+        return msg;
+    }
+
+    public static Message createCreateRoomResponseMessage(String roomId, String roomName) {
+        Message msg = new Message(MessageType.CREATE_ROOM);
+        msg.put("roomId", roomId);
+        msg.put("roomName", roomName);
+        return msg;
+    }
+
+    public static Message createJoinRoomResponseMessage(String roomId, String roomName, List<String> players) {
+        Message msg = new Message(MessageType.JOIN_ROOM);
+        msg.put("roomId", roomId);
+        msg.put("roomName", roomName);
+        msg.put("players", players);
+        return msg;
+    }
+
+    public static Message createPlayerJoinedMessage(String playerId, String playerName) {
+        Message msg = new Message(MessageType.PLAYER_JOINED);
+        msg.put("playerId", playerId);
+        msg.put("playerName", playerName);
+        return msg;
+    }
+
+    public static Message createPlayerLeftMessage(String playerId) {
+        Message msg = new Message(MessageType.PLAYER_LEFT);
+        msg.put("playerId", playerId);
+        return msg;
+    }
+
+    public static Message createPlayerReadyNotificationMessage(String playerId) {
+        Message msg = new Message(MessageType.PLAYER_READY);
+        msg.put("playerId", playerId);
+        return msg;
+    }
+
+    public static Message createAllPlayersReadyMessage() {
+        return new Message(MessageType.ALL_PLAYERS_READY);
+    }
+
+    public static Message createGameStartResponseMessage(String currentPlayerId) {
+        Message msg = new Message(MessageType.GAME_START);
+        msg.put("currentPlayer", currentPlayerId);
+        return msg;
+    }
+
+    public static Message createPlayerMoveResultMessage(String playerId, String word, int score, int row, int col, boolean horizontal) {
+        Message msg = new Message(MessageType.PLAYER_MOVE);
+        msg.put("playerId", playerId);
+        msg.put("word", word);
+        msg.put("score", score);
+        msg.put("row", row);
+        msg.put("col", col);
+        msg.put("horizontal", horizontal);
         return msg;
     }
 
