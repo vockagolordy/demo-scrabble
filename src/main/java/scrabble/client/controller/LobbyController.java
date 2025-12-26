@@ -2,6 +2,7 @@
 
 package scrabble.client.controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -45,13 +46,9 @@ public class LobbyController {
     public void initialize() {
         model = new ClientModel();
 
-        // Привязка свойств модели к интерфейсу
         statusLabel.textProperty().bind(model.statusMessageProperty());
-
-        // Настройка ListView
         roomsListView.setItems(model.getAvailableRooms());
 
-        // Обработчики изменений состояния
         model.connectedToServerProperty().addListener((obs, oldVal, newVal) -> {
             connectButton.setDisable(newVal);
             disconnectButton.setDisable(!newVal);
@@ -62,13 +59,15 @@ public class LobbyController {
 
         model.gameStateProperty().addListener((obs, oldState, newState) -> {
             updateRoomInfo();
+
+            if (newState.isGameStarted()) {
+                Platform.runLater(() -> openGameWindow());
+            }
         });
 
-        // Инициализация ComboBox
         maxPlayersCombo.getItems().addAll("2", "3", "4");
         maxPlayersCombo.getSelectionModel().selectFirst();
 
-        // Выбор комнаты в списке
         roomsListView.getSelectionModel().selectedItemProperty().addListener(
                 (obs, oldVal, newVal) -> {
                     joinRoomButton.setDisable(newVal == null);
@@ -235,10 +234,24 @@ public class LobbyController {
             gameStage.setOnCloseRequest(event -> {
                 handleLeaveRoom();
             });
+
+            if (primaryStage != null) {
+                primaryStage.close();
+            }
+
             gameStage.show();
 
-        } catch (IOException e) {
-            showAlert("Ошибка открытия игры: " + e.getMessage());
+            System.out.println("Окно игры открыто");
+
+        } catch (Exception e) {
+            System.err.println("Ошибка открытия окна игры: " + e.getMessage());
+            e.printStackTrace();
+
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка");
+            alert.setHeaderText("Не удалось открыть окно игры");
+            alert.setContentText("Файл game.fxml не найден или поврежден");
+            alert.showAndWait();
         }
     }
 

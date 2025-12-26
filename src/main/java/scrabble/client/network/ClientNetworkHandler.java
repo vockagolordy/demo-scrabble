@@ -329,25 +329,33 @@ public class ClientNetworkHandler {
     }
 
     private void handleGameStart(Message message) {
+        System.out.println("Получено сообщение GAME_START");
+
         String currentPlayerId = (String) message.get("currentPlayer");
+        System.out.println("Текущий игрок: " + currentPlayerId);
 
         GameState gameState = model.getGameState();
-        gameState.setGameStarted(true);
 
+        gameState.setGameStarted(true);
+        Player currentPlayer = null;
         for (Player player : gameState.getPlayers()) {
-            player.setCurrentTurn(player.getId().equals(currentPlayerId));
             if (player.getId().equals(currentPlayerId)) {
+                player.setCurrentTurn(true);
+                currentPlayer = player;
                 gameState.setCurrentPlayer(player);
+                System.out.println("Найден текущий игрок: " + player.getName());
+            } else {
+                player.setCurrentTurn(false);
             }
         }
 
         gameState.addChatMessage("Игра началась!");
-        gameState.addChatMessage("Первым ходит: " + gameState.getCurrentPlayer().getName());
+        if (currentPlayer != null) {
+            gameState.addChatMessage("Первым ходит: " + currentPlayer.getName());
+        }
 
         fillPlayerRacks();
-
         model.setGameState(gameState);
-        model.setStatusMessage("Игра началась!");
     }
 
     private void handleGameState(Message message) {
