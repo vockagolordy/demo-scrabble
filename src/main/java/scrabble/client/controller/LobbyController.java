@@ -196,28 +196,27 @@ public class LobbyController {
         if (!roomId.isEmpty()) {
             currentRoomLabel.setText("Комната: " + roomId);
 
-            // Обновляем список игроков
             playersListView.getItems().clear();
             for (scrabble.client.model.Player player : model.getGameState().getPlayers()) {
-                playersListView.getItems().add(player.getName() +
-                        (player.isReady() ? " ✓" : "") +
-                        (player.isCurrentTurn() ? " *" : ""));
+                String playerStatus = player.getName();
+                if (player.isReady()) playerStatus += " ✓";
+                if (player.isCurrentTurn()) playerStatus += " *";
+                playersListView.getItems().add(playerStatus);
             }
 
-            // Обновляем чат
             chatArea.clear();
             for (String message : model.getGameState().getChatMessages()) {
                 chatArea.appendText(message + "\n");
             }
 
-            // Показываем кнопку начала игры только создателю
             boolean isCreator = model.getGameState().getPlayers().stream()
                     .filter(p -> p.getId().equals(model.getPlayerId()))
                     .findFirst()
                     .map(p -> model.getGameState().getPlayers().indexOf(p) == 0)
                     .orElse(false);
 
-            startGameButton.setVisible(isCreator);
+            startGameButton.setVisible(isCreator &&
+                    model.getGameState().getPlayers().size() >= 2);
         }
     }
 

@@ -2,18 +2,20 @@
 
 package scrabble.server.network;
 
+import scrabble.client.model.GameState;
 import scrabble.protocol.ProtocolParser;
 import scrabble.server.model.ServerModel;
 import scrabble.server.model.GameRoom;
 import scrabble.protocol.Message;
 import scrabble.protocol.MessageType;
+import scrabble.server.model.WordChecker;
+import scrabble.utils.TileBag;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ClientHandler {
     private final SocketChannel channel;
@@ -154,33 +156,60 @@ public class ClientHandler {
         if (currentRoomId != null) {
             GameRoom room = model.getRoom(currentRoomId);
 
-            // Проверяем, что это ход текущего игрока
             if (clientId.equals(room.getCurrentPlayerId())) {
-                // Здесь должна быть проверка хода
-                // Пока просто передаем ход следующему игроку
-
-                // Рассчитываем очки
                 String word = (String) message.get("word");
-                int score = word.length() * 10; // Упрощенный расчет
-
                 int row = ((Double) message.get("row")).intValue();
                 int col = ((Double) message.get("col")).intValue();
                 boolean horizontal = (Boolean) message.get("horizontal");
+                List<String> tileIds = Arrays.asList((String[]) message.get("tileIds"));
 
-                Message moveResult = ProtocolParser.createPlayerMoveResultMessage(clientId, word, score, row, col, horizontal);
-                broadcastToRoom(moveResult, null);
+                // Используем WordChecker для проверки
+                WordChecker.ValidationResult result = model.getWordChecker().validateMove(
+                        word, row, col, horizontal,
+                        getCurrentBoardState(room), tileIds, clientId, room
+                );
 
-                // Передаем ход
-                room.nextTurn();
+                if (result.isValid()) {
+                    // Обновляем доску через WordChecker
+                    model.getWordChecker().updateBoard(
+                            getCurrentBoardState(room), word, row, col,
+                            horizontal, getPlayerTiles(tileIds)
+                    );
 
-                Map<String, Object> gameData = new HashMap<>();
-                Message nextTurnMsg = ProtocolParser.createGameStateMessage(room.getCurrentPlayerId(), gameData);
-                broadcastToRoom(nextTurnMsg, null);
+                    Message moveResult = ProtocolParser.createPlayerMoveResultMessage(
+                            clientId, word, result.getScore(), row, col, horizontal
+                    );
+                    broadcastToRoom(moveResult, null);
+
+                    room.nextTurn();
+                    Map<String, Object> gameData = new HashMap<>();
+                    Message nextTurnMsg = ProtocolParser.createGameStateMessage(room.getCurrentPlayerId(), gameData);
+                    broadcastToRoom(nextTurnMsg, null);
+                } else {
+                    sendErrorMessage(result.getMessage());
+                }
             } else {
                 sendErrorMessage("Сейчас не ваш ход");
             }
         }
     }
+
+    private GameState.BoardCell[][] getCurrentBoardState(GameRoom room) {
+        // В реальной реализации должен возвращать текущее состояние доски
+        // Для простоты создаем пустую доску
+        GameState gameState = new GameState();
+        return gameState.getBoard();
+    }
+
+    private List<TileBag.Tile> getPlayerTiles(List<String> tileIds) {
+        // В реальной реализации должен возвращать фишки игрока
+        List<scrabble.utils.TileBag.Tile> tiles = new ArrayList<>();
+        for (String id : tileIds) {
+            tiles.add(new scrabble.utils.TileBag.Tile(id.charAt(0), 1));
+        }
+        return tiles;
+    }
+
 
     private void handleChatMessage(Message message) {
         if (currentRoomId != null) {

@@ -11,11 +11,13 @@ import scrabble.utils.DictionaryLoader;
 public class ServerModel {
     private final Map<String, GameRoom> rooms;
     private final Map<String, ClientHandler> connectedClients;
+    private final WordChecker wordChecker;
     private final Set<String> dictionary;
 
     public ServerModel() {
         this.rooms = new ConcurrentHashMap<>();
         this.connectedClients = new ConcurrentHashMap<>();
+        this.wordChecker = new WordChecker(this);
         this.dictionary = DictionaryLoader.loadDictionary();
     }
 
@@ -73,6 +75,10 @@ public class ServerModel {
 
     public ClientHandler getClientHandler(String clientId) {
         return connectedClients.get(clientId);
+    }
+
+    public WordChecker getWordChecker() {
+        return wordChecker;
     }
 
     public Collection<ClientHandler> getAllClientHandlers() {

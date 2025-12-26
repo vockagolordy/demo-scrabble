@@ -77,9 +77,8 @@ public class GameRoom {
     }
 
     public synchronized boolean startGame() {
-        if (allPlayersReady() && !gameStarted) {
+        if (playerIds.size() >= 2 && allPlayersReady() && !gameStarted) {
             gameStarted = true;
-            // Выбираем случайного первого игрока
             List<String> playersList = new ArrayList<>(playerIds);
             currentPlayerId = playersList.get(new Random().nextInt(playersList.size()));
             return true;

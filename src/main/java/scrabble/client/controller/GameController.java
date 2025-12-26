@@ -354,12 +354,11 @@ public class GameController {
         StringBuilder wordBuilder = new StringBuilder();
         List<String> tileIds = new ArrayList<>();
 
-        // Сортируем фишки по позициям
         List<Map.Entry<String, int[]>> sortedTiles = new ArrayList<>(placedTiles.entrySet());
         sortedTiles.sort((a, b) -> {
             int[] posA = a.getValue();
             int[] posB = b.getValue();
-            if (posA[0] == posB[0]) { // одинаковая строка
+            if (posA[0] == posB[0]) {
                 return Integer.compare(posA[1], posB[1]);
             }
             return Integer.compare(posA[0], posB[0]);
@@ -373,36 +372,24 @@ public class GameController {
             }
         }
 
-        String word = wordBuilder.toString().toLowerCase();
-
-        // Проверка минимальной длины слова
-        if (word.length() < 2) {
-            statusLabel.setText("Слово должно содержать минимум 2 буквы!");
-            showAlert("Ошибка", "Слишком короткое слово",
-                    "Слово должно содержать минимум 2 буквы.");
-            return;
-        }
-
-        // Определяем ориентацию слова (горизонтальная/вертикальная)
-        boolean horizontal = true;
-        if (placedTiles.size() > 1) {
-            int[] firstPos = sortedTiles.get(0).getValue();
-            int[] secondPos = sortedTiles.get(1).getValue();
-            horizontal = firstPos[0] == secondPos[0]; // одинаковая строка = горизонтально
-        }
+        String word = wordBuilder.toString();
 
         // Берем координаты первой фишки
         int[] firstPos = sortedTiles.get(0).getValue();
         int row = firstPos[0];
         int col = firstPos[1];
 
-        // Отправляем ход на сервер
-        Message moveMsg = ProtocolParser.createPlayerMoveMessage(word, row, col, horizontal, tileIds.toArray(new String[0]));
-        moveMsg.put("word", word);
-        moveMsg.put("row", row);
-        moveMsg.put("col", col);
-        moveMsg.put("horizontal", horizontal);
-        moveMsg.put("tileIds", tileIds.toArray(new String[0]));
+        // Определяем ориентацию
+        boolean horizontal = true;
+        if (placedTiles.size() > 1) {
+            int[] secondPos = sortedTiles.get(1).getValue();
+            horizontal = firstPos[0] == secondPos[0];
+        }
+
+        Message moveMsg = ProtocolParser.createPlayerMoveMessage(
+                word.toLowerCase(), row, col, horizontal,
+                tileIds.toArray(new String[0])
+        );
 
         if (networkHandler != null) {
             networkHandler.sendMessage(moveMsg);
@@ -412,7 +399,6 @@ public class GameController {
             skipButton.setDisable(true);
             exchangeButton.setDisable(true);
 
-            // Очищаем размещенные фишки
             placedTiles.clear();
             boardCanvas.setDraggedTile(null);
         }
