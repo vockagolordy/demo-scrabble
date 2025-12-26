@@ -1,5 +1,3 @@
-// scrabble/client/network/ClientNetworkHandler.java
-
 package scrabble.client.network;
 
 import scrabble.protocol.Message;
@@ -38,26 +36,12 @@ public class ClientNetworkHandler {
     public boolean connect(String host, int port, String playerName) {
         try {
             socketChannel = SocketChannel.open();
-            socketChannel.configureBlocking(false);
+            socketChannel.configureBlocking(true);
             socketChannel.connect(new InetSocketAddress(host, port));
-
-            // Ждем подключения
-            int attempts = 0;
-            while (!socketChannel.finishConnect() && attempts < 50) {
-                Thread.sleep(100);
-                attempts++;
-            }
-
-            if (!socketChannel.isConnected()) {
-                Platform.runLater(() ->
-                        model.setStatusMessage("Не удалось подключиться к серверу"));
-                return false;
-            }
 
             running = true;
             startNetworkThreads();
 
-            // Отправляем сообщение о подключении
             Message connectMsg = ProtocolParser.createConnectMessage(playerName);
             sendMessage(connectMsg);
 
@@ -69,14 +53,13 @@ public class ClientNetworkHandler {
             return true;
 
         } catch (Exception e) {
-            Platform.runLater(() ->
-                    model.setStatusMessage("Ошибка подключения: " + e.getMessage()));
+            model.setStatusMessage("Ошибка подключения: " + e.getMessage());
             return false;
         }
     }
 
     private void startNetworkThreads() {
-        // Поток для отправки сообщений
+        // Поток отправки
         executor.submit(() -> {
             try {
                 while (running) {
@@ -90,7 +73,7 @@ public class ClientNetworkHandler {
             }
         });
 
-        // Поток для приема сообщений
+        // Поток приема
         executor.submit(() -> {
             ByteBuffer buffer = ByteBuffer.allocate(4096);
             StringBuilder messageBuilder = new StringBuilder();
@@ -112,12 +95,50 @@ public class ClientNetworkHandler {
 
                         // Обработка JSON сообщений
                         String data = messageBuilder.toString();
-                        if (data.contains("\n")) {
-                            String[] messages = data.split("\n");
-                            for (int i = 0; i < messages.length - 1; i++) {
-                                processIncomingMessage(messages[i].trim());
+                        int processed = 0;
+                        int start = 0;
+
+                        while (true) {
+                            int jsonStart = data.indexOf('{', start);
+                            if (jsonStart == -1) break;
+
+                            // Находим конец JSON объекта
+                            int braceCount = 0;
+                            boolean inString = false;
+                            int jsonEnd = -1;
+
+                            for (int i = jsonStart; i < data.length(); i++) {
+                                char c = data.charAt(i);
+
+                                if (c == '"' && (i == 0 || data.charAt(i-1) != '\\')) {
+                                    inString = !inString;
+                                } else if (!inString) {
+                                    if (c == '{') braceCount++;
+                                    else if (c == '}') {
+                                        braceCount--;
+                                        if (braceCount == 0) {
+                                            jsonEnd = i + 1;
+                                            break;
+                                        }
+                                    }
+                                }
                             }
-                            messageBuilder = new StringBuilder(messages[messages.length - 1]);
+
+                            if (jsonEnd != -1) {
+                                String json = data.substring(jsonStart, jsonEnd);
+                                processIncomingMessage(json);
+                                processed++;
+                                start = jsonEnd;
+                            } else {
+                                break; // Неполный JSON
+                            }
+                        }
+
+                        if (start < data.length()) {
+                            String remaining = data.substring(start);
+                            messageBuilder = new StringBuilder(remaining);
+                        } else {
+                            messageBuilder = new StringBuilder();
                         }
                     }
 
@@ -137,6 +158,7 @@ public class ClientNetworkHandler {
             while (buffer.hasRemaining()) {
                 socketChannel.write(buffer);
             }
+
         } catch (IOException e) {
             disconnect();
         }
@@ -219,10 +241,12 @@ public class ClientNetworkHandler {
     private void handleRoomList(Message message) {
         List<String> rooms = (List<String>) message.get("rooms");
         if (rooms != null) {
-            model.clearAvailableRooms();
-            for (String room : rooms) {
-                model.addAvailableRoom(room);
-            }
+            Platform.runLater(() -> {
+                model.clearAvailableRooms();
+                for (String room : rooms) {
+                    model.addAvailableRoom(room);
+                }
+            });
         }
     }
 
@@ -241,11 +265,9 @@ public class ClientNetworkHandler {
         model.setCurrentRoomId(roomId);
         model.setStatusMessage("Присоединились к комнате: " + roomName);
 
-        // Обновляем состояние игры
         GameState gameState = model.getGameState();
         gameState.setCurrentRoomId(roomId);
 
-        // Добавляем игроков
         if (playerIds != null) {
             for (String playerId : playerIds) {
                 if (!playerId.equals(model.getPlayerId())) {
@@ -255,7 +277,6 @@ public class ClientNetworkHandler {
             }
         }
 
-        // Добавляем себя
         Player self = new Player(model.getPlayerId(), model.getPlayerName());
         gameState.addPlayer(self);
 
@@ -313,7 +334,6 @@ public class ClientNetworkHandler {
         GameState gameState = model.getGameState();
         gameState.setGameStarted(true);
 
-        // Устанавливаем текущего игрока
         for (Player player : gameState.getPlayers()) {
             player.setCurrentTurn(player.getId().equals(currentPlayerId));
             if (player.getId().equals(currentPlayerId)) {
@@ -324,7 +344,6 @@ public class ClientNetworkHandler {
         gameState.addChatMessage("Игра началась!");
         gameState.addChatMessage("Первым ходит: " + gameState.getCurrentPlayer().getName());
 
-        // Заполняем полки фишками
         fillPlayerRacks();
 
         model.setGameState(gameState);
@@ -336,7 +355,6 @@ public class ClientNetworkHandler {
 
         GameState gameState = model.getGameState();
 
-        // Обновляем текущего игрока
         for (Player player : gameState.getPlayers()) {
             player.setCurrentTurn(player.getId().equals(currentPlayerId));
             if (player.getId().equals(currentPlayerId)) {
@@ -363,7 +381,6 @@ public class ClientNetworkHandler {
             gameState.addChatMessage(player.getName() + " выложил(а) слово '" + word +
                     "' и получил(а) " + score + " очков");
 
-            // Обновляем очки на интерфейсе
             if (playerId.equals(model.getPlayerId())) {
                 model.setStatusMessage("Вы получили " + score + " очков за слово '" + word + "'");
             }
@@ -408,7 +425,6 @@ public class ClientNetworkHandler {
         GameState gameState = model.getGameState();
 
         for (Player player : gameState.getPlayers()) {
-            // Заполняем полку 7 фишками
             for (int i = 0; i < 7; i++) {
                 scrabble.utils.TileBag.Tile tile = model.getTileBag().drawTile();
                 if (tile != null) {
