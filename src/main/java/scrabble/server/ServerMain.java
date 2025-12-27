@@ -19,11 +19,11 @@ public class ServerMain extends Application {
         VBox root = new VBox(10);
         root.setPadding(new Insets(10));
 
-        Label title = new Label("Сервер Скрэббл");
+        Label title = new Label("Server of Word-Pot");
         title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
-        Button startButton = new Button("Запустить сервер");
-        Button stopButton = new Button("Остановить сервер");
+        Button startButton = new Button("Start server");
+        Button stopButton = new Button("Stop server");
         stopButton.setDisable(true);
 
         logArea = new TextArea();
@@ -31,7 +31,7 @@ public class ServerMain extends Application {
         logArea.setPrefHeight(400);
 
         TextField portField = new TextField("5555");
-        portField.setPromptText("Порт");
+        portField.setPromptText("Port");
         portField.setPrefWidth(100);
 
         startButton.setOnAction(e -> {
@@ -40,9 +40,9 @@ public class ServerMain extends Application {
                 controller.startServer(port);
                 startButton.setDisable(true);
                 stopButton.setDisable(false);
-                log("Сервер запущен на порту " + port);
+                log("Server started in a port  " + port);
             } catch (Exception ex) {
-                log("Ошибка: " + ex.getMessage());
+                log("Error: " + ex.getMessage());
             }
         });
 
@@ -50,17 +50,17 @@ public class ServerMain extends Application {
             controller.stopServer();
             startButton.setDisable(false);
             stopButton.setDisable(true);
-            log("Сервер остановлен");
+            log("Server stopped");
         });
 
-        HBox controls = new HBox(10, new Label("Порт:"), portField, startButton, stopButton);
+        HBox controls = new HBox(10, new Label("Port:"), portField, startButton, stopButton);
         controls.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
-        root.getChildren().addAll(title, controls, new Label("Лог сервера:"), logArea);
+        root.getChildren().addAll(title, controls, new Label("Server's log:"), logArea);
 
         Scene scene = new Scene(root, 600, 500);
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Сервер Скрэббл");
+        primaryStage.setTitle("Server of Word-Post");
         primaryStage.setOnCloseRequest(e -> {
             if (controller.isRunning()) {
                 controller.stopServer();

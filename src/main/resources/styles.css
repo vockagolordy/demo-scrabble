@@ -106,7 +106,6 @@
     -fx-border-color: #bdc3c7;
 }
 
-/* Игровое окно */
 .game-root {
     -fx-background-color: linear-gradient(to bottom, #1c2833, #2c3e50);
 }
@@ -313,7 +312,6 @@
     -fx-font-weight: bold;
 }
 
-/* ScrollBar стили */
 .scroll-bar:vertical,
 .scroll-bar:horizontal {
     -fx-background-color: transparent;
@@ -336,7 +334,6 @@
     -fx-background-color: #4a6572;
 }
 
-/* Alert диалоги */
 .dialog-pane {
     -fx-background-color: #34495e;
 }

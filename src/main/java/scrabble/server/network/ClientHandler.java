@@ -61,10 +61,10 @@ public class ClientHandler {
                     handleDisconnect(message);
                     break;
                 default:
-                    sendErrorMessage("Неизвестный тип сообщения");
+                    sendErrorMessage("Undefined message type");
             }
         } catch (Exception e) {
-            sendErrorMessage("Ошибка обработки сообщения: " + e.getMessage());
+            sendErrorMessage("Error while processing message : " + e.getMessage());
         }
     }
 
@@ -107,7 +107,7 @@ public class ClientHandler {
             Message notification = ProtocolParser.createPlayerJoinedMessage(clientId, playerName);
             broadcastToRoom(notification, clientId);
         } else {
-            sendErrorMessage("Не удалось присоединиться к комнате");
+            sendErrorMessage("Failed to connect to the room");
         }
     }
 
@@ -186,13 +186,12 @@ public class ClientHandler {
                     sendErrorMessage(result.getMessage());
                 }
             } else {
-                sendErrorMessage("Сейчас не ваш ход");
+                sendErrorMessage("It's not your turn yet");
             }
         }
     }
 
     private GameState.BoardCell[][] getCurrentBoardState(GameRoom room) {
-        
         
         GameState gameState = new GameState();
         return gameState.getBoard();
@@ -242,7 +241,6 @@ public class ClientHandler {
 
     private void broadcastRoomListUpdate() {
         Message message = ProtocolParser.createRoomListMessage(model.getAvailableRooms());
-
         
         for (ClientHandler handler : model.getAllClientHandlers()) {
             if (handler != this) {
@@ -267,7 +265,7 @@ public class ClientHandler {
             }
 
         } catch (IOException e) {
-            System.err.println("Ошибка отправки сообщения клиенту " + clientId + ": " + e.getMessage());
+            System.err.println("Error while sending message to client " + clientId + ": " + e.getMessage());
             disconnect();
         }
     }
@@ -289,9 +287,9 @@ public class ClientHandler {
                 channel.close();
             }
 
-            System.out.println("Клиент отключен: " + clientId);
+            System.out.println("Client disconnected: " + clientId);
         } catch (IOException e) {
-            System.err.println("Ошибка при отключении клиента: " + e.getMessage());
+            System.err.println("Error while disconnecting the client: " + e.getMessage());
         }
     }
 

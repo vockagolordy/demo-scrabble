@@ -19,7 +19,7 @@ public class Main extends Application {
         Scene scene = new Scene(root, 900, 700);
         scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
 
-        primaryStage.setTitle("Сетевой Скрэббл");
+        primaryStage.setTitle("Word-Pot");
         primaryStage.setScene(scene);
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);

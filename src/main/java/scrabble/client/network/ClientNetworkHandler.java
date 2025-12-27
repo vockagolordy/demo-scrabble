@@ -44,14 +44,14 @@ public class ClientNetworkHandler {
             sendMessage(connectMsg);
 
             Platform.runLater(() -> {
-                model.setStatusMessage("Подключено к серверу");
+                model.setStatusMessage("Connected to server");
                 model.setConnectedToServer(true);
             });
 
             return true;
 
         } catch (Exception e) {
-            model.setStatusMessage("Ошибка подключения: " + e.getMessage());
+            model.setStatusMessage("Connecting error: " + e.getMessage());
             return false;
         }
     }
@@ -177,7 +177,7 @@ public class ClientNetworkHandler {
             Message message = Message.fromJson(json);
             Platform.runLater(() -> handleMessage(message));
         } catch (Exception e) {
-            System.err.println("Ошибка обработки сообщения: " + e.getMessage());
+            System.err.println("Error while processing message: " + e.getMessage());
         }
     }
 
@@ -226,14 +226,14 @@ public class ClientNetworkHandler {
                 handleErrorMessage(message);
                 break;
             default:
-                System.out.println("Получено сообщение типа: " + message.getType());
+                System.out.println("Received a message with type: " + message.getType());
         }
     }
 
     private void handleConnectResponse(Message message) {
         String playerId = (String) message.get("playerId");
         model.setPlayerId(playerId);
-        model.setStatusMessage("Идентифицирован как: " + model.getPlayerName());
+        model.setStatusMessage("Identified as: " + model.getPlayerName());
     }
 
     private void handleRoomList(Message message) {
@@ -252,7 +252,7 @@ public class ClientNetworkHandler {
         String roomId = (String) message.get("roomId");
         String roomName = (String) message.get("roomName");
         model.setCurrentRoomId(roomId);
-        model.setStatusMessage("Создана комната: " + roomName);
+        model.setStatusMessage("Room created: " + roomName);
     }
 
     private void handleJoinRoomResponse(Message message) {
@@ -261,7 +261,7 @@ public class ClientNetworkHandler {
         List<String> playerIds = (List<String>) message.get("players");
 
         model.setCurrentRoomId(roomId);
-        model.setStatusMessage("Присоединились к комнате: " + roomName);
+        model.setStatusMessage("Joined to room: " + roomName);
 
         GameState gameState = model.getGameState();
         gameState.setCurrentRoomId(roomId);
@@ -269,7 +269,7 @@ public class ClientNetworkHandler {
         if (playerIds != null) {
             for (String playerId : playerIds) {
                 if (!playerId.equals(model.getPlayerId())) {
-                    Player player = new Player(playerId, "Игрок " + playerId.substring(0, 4));
+                    Player player = new Player(playerId, "Player " + playerId.substring(0, 4));
                     gameState.addPlayer(player);
                 }
             }
@@ -288,10 +288,10 @@ public class ClientNetworkHandler {
         GameState gameState = model.getGameState();
         Player player = new Player(playerId, playerName);
         gameState.addPlayer(player);
-        gameState.addChatMessage(playerName + " присоединился к игре");
+        gameState.addChatMessage(playerName + " joined the game");
         model.setGameState(gameState);
 
-        model.setStatusMessage(playerName + " присоединился к комнате");
+        model.setStatusMessage(playerName + " joined the room");
     }
 
     private void handlePlayerLeft(Message message) {
@@ -301,9 +301,9 @@ public class ClientNetworkHandler {
         Player player = gameState.getPlayerById(playerId);
         if (player != null) {
             gameState.removePlayer(playerId);
-            gameState.addChatMessage(player.getName() + " покинул игру");
+            gameState.addChatMessage(player.getName() + " leaved the game");
             model.setGameState(gameState);
-            model.setStatusMessage(player.getName() + " покинул комнату");
+            model.setStatusMessage(player.getName() + " leaved the room");
         }
     }
 
@@ -314,23 +314,23 @@ public class ClientNetworkHandler {
         Player player = gameState.getPlayerById(playerId);
         if (player != null) {
             player.setReady(true);
-            gameState.addChatMessage(player.getName() + " готов к игре");
+            gameState.addChatMessage(player.getName() + " ready to the game");
             model.setGameState(gameState);
         }
     }
 
     private void handleAllPlayersReady(Message message) {
         GameState gameState = model.getGameState();
-        gameState.addChatMessage("Все игроки готовы! Ожидайте начала игры...");
+        gameState.addChatMessage("All players are ready! Wait for the game to start...");
         model.setGameState(gameState);
-        model.setStatusMessage("Все игроки готовы");
+        model.setStatusMessage("All players are ready");
     }
 
     private void handleGameStart(Message message) {
-        System.out.println("Получено сообщение GAME_START");
+        System.out.println("Received a message GAME_START");
 
         String currentPlayerId = (String) message.get("currentPlayer");
-        System.out.println("Текущий игрок: " + currentPlayerId);
+        System.out.println("Current player: " + currentPlayerId);
 
         GameState gameState = model.getGameState();
 
@@ -341,15 +341,15 @@ public class ClientNetworkHandler {
                 player.setCurrentTurn(true);
                 currentPlayer = player;
                 gameState.setCurrentPlayer(player);
-                System.out.println("Найден текущий игрок: " + player.getName());
+                System.out.println("Current player has been found: " + player.getName());
             } else {
                 player.setCurrentTurn(false);
             }
         }
 
-        gameState.addChatMessage("Игра началась!");
+        gameState.addChatMessage("Game has started!");
         if (currentPlayer != null) {
-            gameState.addChatMessage("Первым ходит: " + currentPlayer.getName());
+            gameState.addChatMessage("Goes first: " + currentPlayer.getName());
         }
 
         fillPlayerRacks();
@@ -384,11 +384,11 @@ public class ClientNetworkHandler {
 
         if (player != null) {
             player.addScore(score);
-            gameState.addChatMessage(player.getName() + " выложил(а) слово '" + word +
-                    "' и получил(а) " + score + " очков");
+            gameState.addChatMessage(player.getName() + " placed a word '" + word +
+                    "' and received " + score + " scores");
 
             if (playerId.equals(model.getPlayerId())) {
-                model.setStatusMessage("Вы получили " + score + " очков за слово '" + word + "'");
+                model.setStatusMessage("You received " + score + " scores for the word '" + word + "'");
             }
         }
 
@@ -413,18 +413,18 @@ public class ClientNetworkHandler {
 
         Player winner = gameState.getPlayerById(winnerId);
         if (winner != null) {
-            gameState.addChatMessage("Игра окончена! Победитель: " + winner.getName());
+            gameState.addChatMessage("The game is over! Winner: " + winner.getName());
         } else {
-            gameState.addChatMessage("Игра окончена!");
+            gameState.addChatMessage("The game is over!");
         }
 
         model.setGameState(gameState);
-        model.setStatusMessage("Игра завершена");
+        model.setStatusMessage("The game is over");
     }
 
     private void handleErrorMessage(Message message) {
         String error = (String) message.get("error");
-        model.setStatusMessage("Ошибка: " + error);
+        model.setStatusMessage("Error: " + error);
     }
 
     private void fillPlayerRacks() {
@@ -455,7 +455,7 @@ public class ClientNetworkHandler {
         }
 
         Platform.runLater(() -> {
-            model.setStatusMessage("Отключено от сервера");
+            model.setStatusMessage("Disconnected from the server");
             model.setConnectedToServer(false);
             model.setCurrentRoomId("");
             model.clearAvailableRooms();

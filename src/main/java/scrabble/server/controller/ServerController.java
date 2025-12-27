@@ -22,9 +22,9 @@ public class ServerController {
                 isRunning = true;
                 currentPort = port;
             } catch (Exception e) {
-                System.err.println("Ошибка запуска сервера: " + e.getMessage());
+                System.err.println("Error while starting the server: " + e.getMessage());
                 isRunning = false;
-                throw new RuntimeException("Не удалось запустить сервер", e);
+                throw new RuntimeException("Failed to start server", e);
             }
         }
     }

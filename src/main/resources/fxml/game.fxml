@@ -19,46 +19,45 @@
             </padding>
 
             <VBox spacing="5">
-                <Label fx:id="roomNameLabel" text="Комната: " styleClass="room-name"/>
-                <Label fx:id="turnLabel" text="Ожидание хода..." styleClass="turn-indicator"/>
+                <Label fx:id="roomNameLabel" text="Room: " styleClass="room-name"/>
+                <Label fx:id="turnLabel" text="Waiting for turn..." styleClass="turn-indicator"/>
             </VBox>
 
             <Separator orientation="VERTICAL"/>
 
             <VBox spacing="5">
-                <Label text="Игроки:" styleClass="section-title"/>
+                <Label text="Players:" styleClass="section-title"/>
                 <HBox fx:id="playersContainer" spacing="10"/>
             </VBox>
 
             <Separator orientation="VERTICAL"/>
 
             <VBox spacing="5">
-                <Label fx:id="timerLabel" text="Время: 00:00" styleClass="timer"/>
-                <Label fx:id="scoreLabel" text="Очки: 0" styleClass="score-display"/>
+                <Label fx:id="timerLabel" text="Time: 00:00" styleClass="timer"/>
+                <Label fx:id="scoreLabel" text="Scores: 0" styleClass="score-display"/>
             </VBox>
 
             <Region HBox.hgrow="ALWAYS"/>
 
-            <Button fx:id="surrenderButton" text="Сдаться" styleClass="danger-button" onAction="#handleSurrender"/>
-            <Button fx:id="leaveButton" text="Выйти" styleClass="neutral-button" onAction="#handleLeaveGame"/>
+            <Button fx:id="surrenderButton" text="Give up" styleClass="danger-button" onAction="#handleSurrender"/>
+            <Button fx:id="leaveButton" text="Leave" styleClass="neutral-button" onAction="#handleLeaveGame"/>
         </HBox>
     </top>
 
     <center>
         <SplitPane dividerPositions="0.7" orientation="HORIZONTAL">
 
-            <!-- Левая часть: игровое поле -->
             <VBox spacing="15" styleClass="game-board-container">
                 <padding>
                     <Insets top="20" right="20" bottom="20" left="20"/>
                 </padding>
 
                 <HBox spacing="20" alignment="CENTER">
-                    <Button fx:id="exchangeButton" text="Обменять фишки"
+                    <Button fx:id="exchangeButton" text="Change tiles"
                             styleClass="action-button" onAction="#handleExchangeTiles"/>
-                    <Button fx:id="skipButton" text="Пропустить ход"
+                    <Button fx:id="skipButton" text="Skip turn"
                             styleClass="action-button" onAction="#handleSkipTurn"/>
-                    <Button fx:id="submitButton" text="Сделать ход"
+                    <Button fx:id="submitButton" text="Make move"
                             styleClass="primary-button" onAction="#handleSubmitMove" disable="true"/>
                 </HBox>
 
@@ -66,20 +65,18 @@
                     <BoardCanvas fx:id="boardCanvas"/>
                 </StackPane>
 
-                <!-- Полка с фишками игрока -->
                 <VBox spacing="10" alignment="CENTER">
-                    <Label text="Ваши фишки:" styleClass="section-title"/>
+                    <Label text="Your tiles:" styleClass="section-title"/>
                     <RackView fx:id="rackView" styleClass="player-rack"/>
                 </VBox>
             </VBox>
 
-            <!-- Правая часть: информация и чат -->
             <VBox spacing="15" styleClass="game-info-panel">
                 <padding>
                     <Insets top="20" right="20" bottom="20" left="20"/>
                 </padding>
 
-                <Label text="Таблица очков" styleClass="panel-title">
+                <Label text="Scores table" styleClass="panel-title">
                     <font>
                         <Font name="Arial" size="16" />
                     </font>
@@ -87,14 +84,14 @@
 
                 <TableView fx:id="scoreTable" styleClass="score-table" prefHeight="150">
                     <columns>
-                        <TableColumn text="Игрок" fx:id="playerColumn" prefWidth="150"/>
-                        <TableColumn text="Очки" fx:id="scoreColumn" prefWidth="100"/>
+                        <TableColumn text="Player" fx:id="playerColumn" prefWidth="150"/>
+                        <TableColumn text="Scores" fx:id="scoreColumn" prefWidth="100"/>
                     </columns>
                 </TableView>
 
                 <Separator/>
 
-                <Label text="История ходов" styleClass="panel-title">
+                <Label text="Turns history" styleClass="panel-title">
                     <font>
                         <Font name="Arial" size="16"/>
                     </font>
@@ -104,7 +101,7 @@
 
                 <Separator/>
 
-                <Label text="Игровой чат" styleClass="panel-title">
+                <Label text="Game chat" styleClass="panel-title">
                     <font>
                         <Font name="Arial" size="16"/>
                     </font>
@@ -114,9 +111,9 @@
                           styleClass="game-chat" VBox.vgrow="ALWAYS"/>
 
                 <HBox spacing="10">
-                    <TextField fx:id="gameChatInput" promptText="Введите сообщение..."
+                    <TextField fx:id="gameChatInput" promptText="Enter message..."
                                HBox.hgrow="ALWAYS" onAction="#handleGameChat"/>
-                    <Button fx:id="sendGameChatButton" text="Отправить"
+                    <Button fx:id="sendGameChatButton" text="Send"
                             onAction="#handleGameChat"/>
                 </HBox>
             </VBox>
@@ -130,10 +127,10 @@
                 <Insets top="5" right="20" bottom="5" left="20"/>
             </padding>
 
-            <Label fx:id="statusLabel" text="Готов к игре..." styleClass="game-status"/>
+            <Label fx:id="statusLabel" text="Ready for the game..." styleClass="game-status"/>
             <ProgressIndicator fx:id="thinkingIndicator" visible="false" prefWidth="20" prefHeight="20"/>
             <Region HBox.hgrow="ALWAYS"/>
-            <Label fx:id="tilesLeftLabel" text="Фишек осталось: 100"
+            <Label fx:id="tilesLeftLabel" text="Tiles left: 100"
                    styleClass="tiles-counter"/>
         </HBox>
     </bottom>

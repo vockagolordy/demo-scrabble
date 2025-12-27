@@ -15,8 +15,8 @@ public class MainController {
     @FXML
     private void handleExit() {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Выход");
-        confirm.setHeaderText("Завершить работу программы?");
+        confirm.setTitle("Exit");
+        confirm.setHeaderText("End the program?");
 
         if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
             primaryStage.close();
@@ -26,13 +26,13 @@ public class MainController {
     @FXML
     private void handleAbout() {
         Alert about = new Alert(Alert.AlertType.INFORMATION);
-        about.setTitle("О программе");
-        about.setHeaderText("Сетевой Скрэббл");
-        about.setContentText("Версия 1.0\n\n" +
-                "Семестровая работа по Основам разработки ИС\n" +
-                "Сетевое приложение с оконным интерфейсом\n\n" +
-                "Игра Скрэббл с поддержкой сети, комнат и чата.\n" +
-                "Реализовано на JavaFX с использованием Java NIO.");
+        about.setTitle("About the program");
+        about.setHeaderText("Word-Pot");
+        about.setContentText("Version demo-1.0\n\n" +
+                "Semester work for the ORIS\n" +
+                "A network application with a windowed interface\n\n" +
+                "Scrabble-like game with the chat and rooms\n" +
+                "Implemented on JavaFX with use of Java NIO.");
         about.showAndWait();
     }
 }

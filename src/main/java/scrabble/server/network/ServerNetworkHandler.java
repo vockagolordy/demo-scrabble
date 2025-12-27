@@ -33,7 +33,7 @@ public class ServerNetworkHandler {
         serverChannel.register(selector, SelectionKey.OP_ACCEPT);
 
         running = true;
-        System.out.println("Сервер запущен на порту " + port);
+        System.out.println("Server started in the port " + port);
 
         executor.submit(this::runServerLoop);
     }
@@ -59,7 +59,7 @@ public class ServerNetworkHandler {
                 }
             }
         } catch (IOException e) {
-            System.err.println("Ошибка в основном цикле сервера: " + e.getMessage());
+            System.err.println("Error in the main cycle of server: " + e.getMessage());
         }
     }
 
@@ -74,7 +74,7 @@ public class ServerNetworkHandler {
         clientChannel.register(selector, SelectionKey.OP_READ, handler);
         model.registerClient(clientId, handler);
 
-        System.out.println("Клиент подключен: " + clientId);
+        System.out.println("Client connected: " + clientId);
     }
 
     private void readFromClient(SelectionKey key) throws IOException {
@@ -128,9 +128,9 @@ public class ServerNetworkHandler {
                 serverChannel.close();
             }
         } catch (IOException e) {
-            System.err.println("Ошибка при остановке сервера: " + e.getMessage());
+            System.err.println("Error while stopping the server: " + e.getMessage());
         }
 
-        System.out.println("Сервер остановлен");
+        System.out.println("Server stopped");
     }
 }

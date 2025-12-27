@@ -9,7 +9,7 @@ import scrabble.utils.TileBag.Tile;
 public class GameState {
     public static class BoardCell {
         private Tile tile;
-        private String multiplier; 
+        private String multiplier; // "DW", "TW", "DL", "TL", null
         private int row;
         private int col;
 

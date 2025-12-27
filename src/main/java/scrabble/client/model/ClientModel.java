@@ -18,7 +18,7 @@ public class ClientModel {
     public ClientModel() {
         this.gameState = new SimpleObjectProperty<>(new GameState());
         this.playerName = new SimpleStringProperty("");
-        this.statusMessage = new SimpleStringProperty("Не подключено");
+        this.statusMessage = new SimpleStringProperty("Not connected");
         this.availableRooms = new SimpleListProperty<>(javafx.collections.FXCollections.observableArrayList());
         this.connectedToServer = new SimpleBooleanProperty(false);
         this.tileBag = new TileBag();

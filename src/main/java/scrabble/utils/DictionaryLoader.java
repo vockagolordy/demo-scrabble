@@ -32,15 +32,15 @@ public class DictionaryLoader {
 
                     
                     if (loadedCount % 10000 == 0) {
-                        System.out.println("Загружено " + loadedCount + " английских слов...");
+                        System.out.println("Loaded " + loadedCount + " english words...");
                     }
                 }
             }
-            System.out.println("Успешно загружено " + loadedCount + " английских слов из словаря");
+            System.out.println("Successfully loaded a " + loadedCount + " english words form dictionary");
 
         } catch (Exception e) {
-            System.err.println("Ошибка загрузки английского словаря: " + e.getMessage());
-            System.err.println("Проверьте наличие файла " + DICTIONARY_FILE + " в resources");
+            System.err.println("Error while loading words form dictionary: " + e.getMessage());
+            System.err.println("Check the existence " + DICTIONARY_FILE + " in resources");
 
             
             createFallbackDictionary();
@@ -48,7 +48,7 @@ public class DictionaryLoader {
     }
 
     private static void createFallbackDictionary() {
-        System.out.println("Создание резервного английского словаря...");
+        System.out.println("Creating fallback dictionary...");
         String[] commonEnglishWords = {
                 "A", "I",
                 "ABOUT", "ALL", "ALSO", "AND", "AS", "AT", "BE", "BECAUSE", "BUT", "BY", "CAN", "COME", "COULD", "DAY", "DO", "EVEN", "FIND", "FIRST", "FOR", "FROM", "GET", "GIVE", "GO", "HAVE", "HE", "HER", "HERE", "HIM", "HIS", "HOW", "IF", "IN", "INTO", "IT", "ITS", "JUST", "KNOW", "LIKE", "LOOK", "MAKE", "MAN", "MANY", "ME", "MORE", "MY", "NEW", "NO", "NOT", "NOW", "OF", "ON", "ONE", "ONLY", "OR", "OTHER", "OUR", "OUT", "OVER", "PEOPLE", "SAY", "SEE", "SHE", "SO", "SOME", "TAKE", "THAN", "THAT", "THE", "THEIR", "THEM", "THEN", "THERE", "THESE", "THEY", "THING", "THINK", "THIS", "THOSE", "TIME", "TO", "TWO", "UP", "USE", "VERY", "WANT", "WAY", "WE", "WELL", "WHAT", "WHEN", "WHICH", "WHO", "WILL", "WITH", "WOULD", "YEAR", "YOU", "YOUR",
@@ -58,7 +58,7 @@ public class DictionaryLoader {
         for (String word : commonEnglishWords) {
             dictionary.add(word.toUpperCase());
         }
-        System.out.println("Создан резервный словарь из " + dictionary.size() + " английских слов");
+        System.out.println("Created fallback dictionary of  " + dictionary.size() + " english words");
     }
 
     public static boolean isValidWord(String word) {
@@ -83,7 +83,7 @@ public class DictionaryLoader {
 
         
         if (!isValid && normalizedWord.length() <= 10) {
-            System.out.println("Слово не найдено в словаре: " + normalizedWord);
+            System.out.println("Word isn't found in dictionary : " + normalizedWord);
         }
 
         return isValid;

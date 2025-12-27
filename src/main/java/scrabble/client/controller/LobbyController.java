@@ -95,12 +95,12 @@ public class LobbyController {
         String portText = serverPortField.getText().trim();
 
         if (playerName.isEmpty()) {
-            showAlert("Введите имя игрока");
+            showAlert("Enter player's name");
             return;
         }
 
         if (address.isEmpty()) {
-            showAlert("Введите адрес сервера");
+            showAlert("Enter server's address");
             return;
         }
 
@@ -110,10 +110,10 @@ public class LobbyController {
 
             networkHandler = new ClientNetworkHandler(model);
             if (networkHandler.connect(address, port, playerName)) {
-                model.setStatusMessage("Подключение...");
+                model.setStatusMessage("Connecting...");
             }
         } catch (NumberFormatException e) {
-            showAlert("Некорректный номер порта");
+            showAlert("Incorrect port number");
         }
     }
 
@@ -130,7 +130,7 @@ public class LobbyController {
         String maxPlayers = maxPlayersCombo.getValue();
 
         if (roomName.isEmpty()) {
-            showAlert("Введите название комнаты");
+            showAlert("Enter name for the room");
             return;
         }
 
@@ -177,7 +177,7 @@ public class LobbyController {
         Message message = ProtocolParser.createLeaveRoomMessage();
         if (networkHandler != null) {
             networkHandler.sendMessage(message);
-            currentRoomLabel.setText("Не в комнате");
+            currentRoomLabel.setText("Not in a room");
             playersListView.getItems().clear();
             leaveRoomButton.setDisable(true);
             readyButton.setDisable(true);
@@ -207,7 +207,7 @@ public class LobbyController {
     private void updateRoomInfo() {
         String roomId = model.getCurrentRoomId();
         if (!roomId.isEmpty()) {
-            currentRoomLabel.setText("Комната: " + roomId);
+            currentRoomLabel.setText("Room: " + roomId);
 
             playersListView.getItems().clear();
             for (scrabble.client.model.Player player : model.getGameState().getPlayers()) {
@@ -243,7 +243,7 @@ public class LobbyController {
             gameController.setNetworkHandler(networkHandler);
 
             Stage gameStage = new Stage();
-            gameStage.setTitle("Скрэббл - " + model.getPlayerName());
+            gameStage.setTitle("Word-Pot - " + model.getPlayerName());
             gameStage.setScene(new Scene(gameRoot, 1200, 800));
             gameStage.setOnCloseRequest(event -> {
                 handleLeaveRoom();
@@ -255,23 +255,23 @@ public class LobbyController {
 
             gameStage.show();
 
-            System.out.println("Окно игры открыто");
+            System.out.println("Game screen is open");
 
         } catch (Exception e) {
-            System.err.println("Ошибка открытия окна игры: " + e.getMessage());
+            System.err.println("Error while opening game screen: " + e.getMessage());
             e.printStackTrace();
 
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Ошибка");
-            alert.setHeaderText("Не удалось открыть окно игры");
-            alert.setContentText("Файл game.fxml не найден или поврежден");
+            alert.setTitle("Error");
+            alert.setHeaderText("Couldn't open the game window");
+            alert.setContentText("The game.fxml file was not found or corrupted");
             alert.showAndWait();
         }
     }
 
     private void showAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Внимание");
+        alert.setTitle("Attention");
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();

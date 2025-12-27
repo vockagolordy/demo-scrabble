@@ -7,12 +7,12 @@ import java.util.Random;
 
 public class TileBag {
     private List<Tile> tiles;
-    private Random random;
+    private final Random random;
 
     public static class Tile {
-        private String id;
-        private char letter;
-        private int points;
+        private final String id;
+        private final char letter;
+        private final int points;
 
         public Tile(char letter, int points) {
             this.letter = letter;
@@ -24,9 +24,17 @@ public class TileBag {
             return letter + "_" + System.currentTimeMillis() + "_" + (new Random()).nextInt(1000);
         }
 
-        public char getLetter() { return letter; }
-        public int getPoints() { return points; }
-        public String getId() { return id; }
+        public char getLetter() {
+            return letter;
+        }
+
+        public int getPoints() {
+            return points;
+        }
+
+        public String getId() {
+            return id;
+        }
 
         @Override
         public String toString() {
@@ -42,7 +50,7 @@ public class TileBag {
     private void initializeEnglishTiles() {
         tiles = new ArrayList<>();
 
-        
+
         addTile('A', 1, 9);
         addTile('B', 3, 2);
         addTile('C', 3, 2);
@@ -69,9 +77,9 @@ public class TileBag {
         addTile('X', 8, 1);
         addTile('Y', 4, 2);
         addTile('Z', 10, 1);
-        addTile(' ', 0, 2); 
+        addTile(' ', 0, 2);
 
-        System.out.println("Инициализирован мешок с " + tiles.size() + " английскими фишками");
+        System.out.println("Initialized bag with " + tiles.size() + " English tiles");
         shuffle();
     }
 
@@ -114,41 +122,31 @@ public class TileBag {
         return drawn;
     }
 
-    
+
     public static int getLetterValue(char letter) {
-        letter = Character.toUpperCase(letter);
-        switch (letter) {
-            case 'A': case 'E': case 'I': case 'O': case 'U':
-            case 'L': case 'N': case 'S': case 'T': case 'R':
-                return 1;
-            case 'D': case 'G':
-                return 2;
-            case 'B': case 'C': case 'M': case 'P':
-                return 3;
-            case 'F': case 'H': case 'V': case 'W': case 'Y':
-                return 4;
-            case 'K':
-                return 5;
-            case 'J': case 'X':
-                return 8;
-            case 'Q': case 'Z':
-                return 10;
-            case ' ': 
-                return 0;
-            default:
-                return 0;
-        }
+        char upperLetter = Character.toUpperCase(letter);
+        return switch (upperLetter) {
+            case 'A', 'E', 'I', 'O', 'U', 'L', 'N', 'S', 'T', 'R' -> 1;
+            case 'D', 'G' -> 2;
+            case 'B', 'C', 'M', 'P' -> 3;
+            case 'F', 'H', 'V', 'W', 'Y' -> 4;
+            case 'K' -> 5;
+            case 'J', 'X' -> 8;
+            case 'Q', 'Z' -> 10;
+            default -> 0;
+        };
     }
 
-    
+
     public static boolean isVowel(char letter) {
-        letter = Character.toUpperCase(letter);
-        return letter == 'A' || letter == 'E' || letter == 'I' || letter == 'O' || letter == 'U' || letter == 'Y';
+        char upperLetter = Character.toUpperCase(letter);
+        return upperLetter == 'A' || upperLetter == 'E' || upperLetter == 'I' || upperLetter == 'O'
+                || upperLetter == 'U' || upperLetter == 'Y';
     }
 
-    
+
     public static boolean isConsonant(char letter) {
-        letter = Character.toUpperCase(letter);
-        return !isVowel(letter) && letter >= 'A' && letter <= 'Z';
+        char upperLetter = Character.toUpperCase(letter);
+        return !isVowel(upperLetter) && upperLetter >= 'A' && upperLetter <= 'Z';
     }
 }
