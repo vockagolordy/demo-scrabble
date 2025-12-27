@@ -75,7 +75,7 @@ public class LobbyController {
             updateRoomInfo();
 
             if (newState.isGameStarted()) {
-                Platform.runLater(() -> openGameWindow());
+                Platform.runLater(this::openGameWindow);
             }
         });
 
@@ -83,9 +83,7 @@ public class LobbyController {
         maxPlayersCombo.getSelectionModel().selectFirst();
 
         roomsListView.getSelectionModel().selectedItemProperty().addListener(
-                (obs, oldVal, newVal) -> {
-                    joinRoomButton.setDisable(newVal == null);
-                });
+                (obs, oldVal, newVal) -> joinRoomButton.setDisable(newVal == null));
     }
 
     @FXML
@@ -112,6 +110,8 @@ public class LobbyController {
             if (networkHandler.connect(address, port, playerName)) {
                 model.setStatusMessage("Connecting...");
             }
+
+            setNotInRoomButtons();
         } catch (NumberFormatException e) {
             showAlert("Incorrect port number");
         }
@@ -155,9 +155,6 @@ public class LobbyController {
 
                 if (networkHandler != null) {
                     networkHandler.sendMessage(message);
-                    leaveRoomButton.setDisable(false);
-                    readyButton.setDisable(false);
-                    startGameButton.setDisable(false);
                 }
             }
         }
@@ -179,9 +176,7 @@ public class LobbyController {
             networkHandler.sendMessage(message);
             currentRoomLabel.setText("Not in a room");
             playersListView.getItems().clear();
-            leaveRoomButton.setDisable(true);
-            readyButton.setDisable(true);
-            startGameButton.setDisable(true);
+            setNotInRoomButtons();
             chatArea.clear();
         }
     }
@@ -222,14 +217,14 @@ public class LobbyController {
                 chatArea.appendText(message + "\n");
             }
 
-            boolean isCreator = model.getGameState().getPlayers().stream()
-                    .filter(p -> p.getId().equals(model.getPlayerId()))
-                    .findFirst()
-                    .map(p -> model.getGameState().getPlayers().indexOf(p) == 0)
-                    .orElse(false);
+            setInRoomButtons();
+
+            boolean isCreator = model.getGameState().getPlayers().get(0).getId().equals(model.getPlayerId());
 
             startGameButton.setVisible(isCreator &&
                     model.getGameState().getPlayers().size() >= 2);
+        } else {
+            setNotInRoomButtons();
         }
     }
 
@@ -241,19 +236,13 @@ public class LobbyController {
             GameController gameController = loader.getController();
             gameController.setModel(model);
             gameController.setNetworkHandler(networkHandler);
+            gameController.setBoardCanvasClickHandler();
+            
+            primaryStage.setTitle("Word-Pot - " + model.getPlayerName());
+            primaryStage.setScene(new Scene(gameRoot, 1200, 800));
+            primaryStage.setOnCloseRequest(event -> handleLeaveRoom());
 
-            Stage gameStage = new Stage();
-            gameStage.setTitle("Word-Pot - " + model.getPlayerName());
-            gameStage.setScene(new Scene(gameRoot, 1200, 800));
-            gameStage.setOnCloseRequest(event -> {
-                handleLeaveRoom();
-            });
-
-            if (primaryStage != null) {
-                primaryStage.close();
-            }
-
-            gameStage.show();
+            primaryStage.show();
 
             System.out.println("Game screen is open");
 
@@ -275,6 +264,24 @@ public class LobbyController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void setInRoomButtons() {
+        leaveRoomButton.setDisable(false);
+        readyButton.setDisable(false);
+        startGameButton.setDisable(false);
+        joinRoomButton.setDisable(true);
+        createRoomButton.setDisable(true);
+        sendChatButton.setDisable(false);
+    }
+
+    private void setNotInRoomButtons() {
+        leaveRoomButton.setDisable(true);
+        readyButton.setDisable(true);
+        startGameButton.setDisable(true);
+        sendChatButton.setDisable(true);
+        joinRoomButton.setDisable(false);
+        createRoomButton.setDisable(false);
     }
 
     public void setPrimaryStage(Stage primaryStage) {

@@ -1,10 +1,10 @@
 package scrabble.server.network;
 
 import scrabble.client.model.GameState;
-import scrabble.protocol.ProtocolParser;
-import scrabble.server.model.ServerModel;
-import scrabble.server.model.GameRoom;
 import scrabble.protocol.Message;
+import scrabble.protocol.ProtocolParser;
+import scrabble.server.model.GameRoom;
+import scrabble.server.model.ServerModel;
 import scrabble.server.model.WordChecker;
 import scrabble.utils.TileBag;
 
@@ -74,7 +74,7 @@ public class ClientHandler {
         Message response = ProtocolParser.createConnectResponseMessage(clientId, "connected");
         sendMessage(response);
 
-        
+
         sendRoomList();
     }
 
@@ -88,7 +88,7 @@ public class ClientHandler {
         Message response = ProtocolParser.createCreateRoomResponseMessage(room.getId(), room.getName());
         sendMessage(response);
 
-        
+
         sendRoomList();
         broadcastRoomListUpdate();
     }
@@ -103,9 +103,12 @@ public class ClientHandler {
             Message response = ProtocolParser.createJoinRoomResponseMessage(roomId, room.getName(), new ArrayList<>(room.getPlayerIds()));
             sendMessage(response);
 
-            
+
             Message notification = ProtocolParser.createPlayerJoinedMessage(clientId, playerName);
             broadcastToRoom(notification, clientId);
+
+            sendRoomList();
+            broadcastRoomListUpdate();
         } else {
             sendErrorMessage("Failed to connect to the room");
         }
@@ -119,6 +122,9 @@ public class ClientHandler {
             broadcastToRoom(notification, clientId);
 
             currentRoomId = null;
+
+            sendRoomList();
+            broadcastRoomListUpdate();
         }
     }
 
@@ -130,7 +136,7 @@ public class ClientHandler {
             Message notification = ProtocolParser.createPlayerReadyNotificationMessage(clientId);
             broadcastToRoom(notification, null);
 
-            
+
             if (room.allPlayersReady() && room.getCreatorId().equals(clientId)) {
                 Message readyNotification = ProtocolParser.createAllPlayersReadyMessage();
                 sendMessage(readyNotification);
@@ -142,7 +148,7 @@ public class ClientHandler {
         if (currentRoomId != null) {
             GameRoom room = model.getRoom(currentRoomId);
             if (room.getCreatorId().equals(clientId) && room.startGame()) {
-                
+
                 Message gameStartMsg = ProtocolParser.createGameStartResponseMessage(room.getCurrentPlayerId());
                 broadcastToRoom(gameStartMsg, null);
             }
@@ -160,14 +166,14 @@ public class ClientHandler {
                 boolean horizontal = (Boolean) message.get("horizontal");
                 List<String> tileIds = Arrays.asList((String[]) message.get("tileIds"));
 
-                
+
                 WordChecker.ValidationResult result = model.getWordChecker().validateMove(
                         word, row, col, horizontal,
                         getCurrentBoardState(room), tileIds, clientId, room
                 );
 
                 if (result.isValid()) {
-                    
+
                     model.getWordChecker().updateBoard(
                             getCurrentBoardState(room), word, row, col,
                             horizontal, getPlayerTiles(tileIds)
@@ -192,13 +198,13 @@ public class ClientHandler {
     }
 
     private GameState.BoardCell[][] getCurrentBoardState(GameRoom room) {
-        
+
         GameState gameState = new GameState();
         return gameState.getBoard();
     }
 
     private List<TileBag.Tile> getPlayerTiles(List<String> tileIds) {
-        
+
         List<scrabble.utils.TileBag.Tile> tiles = new ArrayList<>();
         for (String id : tileIds) {
             tiles.add(new scrabble.utils.TileBag.Tile(id.charAt(0), 1));
@@ -241,7 +247,7 @@ public class ClientHandler {
 
     private void broadcastRoomListUpdate() {
         Message message = ProtocolParser.createRoomListMessage(model.getAvailableRooms());
-        
+
         for (ClientHandler handler : model.getAllClientHandlers()) {
             if (handler != this) {
                 handler.sendMessage(message);

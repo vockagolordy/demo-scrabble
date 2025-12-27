@@ -1,12 +1,13 @@
 package scrabble.client.controller;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import scrabble.client.model.ClientModel;
 import scrabble.client.model.GameState;
@@ -18,6 +19,7 @@ import scrabble.client.view.components.TileView;
 import scrabble.protocol.Message;
 import scrabble.protocol.ProtocolParser;
 import scrabble.utils.TileBag;
+
 import java.util.*;
 
 public class GameController {
@@ -120,6 +122,10 @@ public class GameController {
 
 
         setupButtons();
+    }
+
+    public void setBoardCanvasClickHandler() {
+        boardCanvas.addEventHandler(BoardCanvas.TileClickedEvent.TILE_CLICKED, this::handleBoardTileClick);
     }
 
     public void setModel(ClientModel model) {
@@ -423,7 +429,7 @@ public class GameController {
             skipButton.setDisable(true);
             exchangeButton.setDisable(true);
 
-            placedTiles.clear();
+            clearBoardAfterMove();
             boardCanvas.setDraggedTile(null);
         }
     }
@@ -490,6 +496,11 @@ public class GameController {
             statusLabel.setText("Turn skipped");
             thinkingIndicator.setVisible(true);
             skipButton.setDisable(true);
+            submitButton.setDisable(true);
+            exchangeButton.setDisable(true);
+            
+            // Clear any placed tiles from the board
+            clearBoardAfterMove();
         }
     }
 
@@ -594,14 +605,20 @@ public class GameController {
         TileBag.Tile tile = event.getTile();
 
 
-        double cellX = event.getSceneX() - boardCanvas.getLayoutX();
-        double cellY = event.getSceneY() - boardCanvas.getLayoutY();
+        Point2D sceneCoords = new Point2D(event.getSceneX(), event.getSceneY());
+        Point2D canvasLocalCoords = boardCanvas.sceneToLocal(sceneCoords);
+        if (canvasLocalCoords == null) {
+            statusLabel.setText("Drop tile on the board!");
+            return;
+        }
+
+        double cellX = canvasLocalCoords.getX();
+        double cellY = canvasLocalCoords.getY();
 
         int col = (int) (cellX / 40);
         int row = (int) (cellY / 40);
 
         if (row >= 0 && row < 15 && col >= 0 && col < 15) {
-
             if (model.getGameState().getCell(row, col).hasTile()) {
                 statusLabel.setText("Cell is already occupied!");
                 showAlert("Error", "Cell occupied",
@@ -621,11 +638,13 @@ public class GameController {
 
             placedTiles.put(tile.getId(), new int[]{row, col});
 
+            // Add tile to GameState board so it's displayed
+            gameState.placeTile(row, col, tile);
 
             rackView.removeTile(tile.getId());
 
-
-            boardCanvas.setDraggedTile(tile);
+            // Redraw the board to show the placed tile
+            boardCanvas.drawBoard();
 
             statusLabel.setText("Tile '" + Character.toUpperCase(tile.getLetter()) +
                     "' placed at [" + (char) ('A' + col) + "," + (row + 1) + "]");
@@ -774,18 +793,58 @@ public class GameController {
 
             if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
 
-                for (String tileId : placedTiles.keySet()) {
+                for (Map.Entry<String, int[]> entry : placedTiles.entrySet()) {
+                    String tileId = entry.getKey();
+                    int[] pos = entry.getValue();
                     TileBag.Tile tile = getTileById(tileId);
                     if (tile != null) {
+                        // Remove tile from GameState board
+                        model.getGameState().placeTile(pos[0], pos[1], null);
                         rackView.addTile(tile);
                     }
                 }
 
                 placedTiles.clear();
-                boardCanvas.setDraggedTile(null);
+                boardCanvas.drawBoard();
                 statusLabel.setText("Move canceled. All tiles returned to the rack.");
                 submitButton.setDisable(true);
             }
         }
+    }
+
+    private void handleBoardTileClick(BoardCanvas.TileClickedEvent event) {
+        if (!isMyTurn) {
+            statusLabel.setText("It's not your turn now!");
+            return;
+        }
+
+        TileBag.Tile clickedTile = event.getTile();
+        int row = event.getRow();
+        int col = event.getCol();
+
+        // Check if this tile was placed by the current player in this turn
+        String tileId = clickedTile.getId();
+        if (placedTiles.containsKey(tileId)) {
+            // Remove tile from board and return to rack
+            model.getGameState().placeTile(row, col, null);
+            placedTiles.remove(tileId);
+            rackView.addTile(clickedTile);
+            boardCanvas.drawBoard();
+
+            statusLabel.setText("Tile '" + Character.toUpperCase(clickedTile.getLetter()) +
+                    "' returned to the rack");
+
+            submitButton.setDisable(placedTiles.isEmpty());
+        }
+    }
+
+    private void clearBoardAfterMove() {
+        // Remove all placed tiles from the board
+        for (Map.Entry<String, int[]> entry : placedTiles.entrySet()) {
+            int[] pos = entry.getValue();
+            model.getGameState().placeTile(pos[0], pos[1], null);
+        }
+        placedTiles.clear();
+        boardCanvas.drawBoard();
     }
 }

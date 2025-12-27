@@ -2,6 +2,7 @@ package scrabble.client.model;
 
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
+import javafx.collections.FXCollections;
 import java.util.List;
 import scrabble.utils.TileBag;
 
@@ -13,17 +14,17 @@ public class ClientModel {
     private final BooleanProperty connectedToServer;
     private TileBag tileBag;
     private String playerId;
-    private String currentRoomId;
+    private StringProperty currentRoomId;
 
     public ClientModel() {
         this.gameState = new SimpleObjectProperty<>(new GameState());
         this.playerName = new SimpleStringProperty("");
         this.statusMessage = new SimpleStringProperty("Not connected");
-        this.availableRooms = new SimpleListProperty<>(javafx.collections.FXCollections.observableArrayList());
+        this.availableRooms = new SimpleListProperty<>(FXCollections.observableArrayList());
         this.connectedToServer = new SimpleBooleanProperty(false);
         this.tileBag = new TileBag();
         this.playerId = "";
-        this.currentRoomId = "";
+        this.currentRoomId = new SimpleStringProperty("");
     }
 
     public ObjectProperty<GameState> gameStateProperty() { return gameState; }
@@ -52,8 +53,17 @@ public class ClientModel {
     public String getPlayerId() { return playerId; }
     public void setPlayerId(String playerId) { this.playerId = playerId; }
 
-    public String getCurrentRoomId() { return currentRoomId; }
-    public void setCurrentRoomId(String currentRoomId) { this.currentRoomId = currentRoomId; }
+    public String getCurrentRoomId() {
+        return currentRoomId.get();
+    }
+
+    public StringProperty currentRoomIdProperty() {
+        return currentRoomId;
+    }
+
+    public void setCurrentRoomId(String currentRoomId) {
+        this.currentRoomId.set(currentRoomId);
+    }
 
     public TileBag getTileBag() { return tileBag; }
 

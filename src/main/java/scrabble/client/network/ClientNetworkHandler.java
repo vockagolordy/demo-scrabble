@@ -253,6 +253,14 @@ public class ClientNetworkHandler {
         String roomName = (String) message.get("roomName");
         model.setCurrentRoomId(roomId);
         model.setStatusMessage("Room created: " + roomName);
+
+        GameState gameState = new GameState();
+        gameState.setCurrentRoomId(roomId);
+
+        Player self = new Player(model.getPlayerId(), model.getPlayerName());
+        gameState.addPlayer(self);
+
+        model.setGameState(gameState);
     }
 
     private void handleJoinRoomResponse(Message message) {
@@ -263,7 +271,7 @@ public class ClientNetworkHandler {
         model.setCurrentRoomId(roomId);
         model.setStatusMessage("Joined to room: " + roomName);
 
-        GameState gameState = model.getGameState();
+        GameState gameState = new GameState();
         gameState.setCurrentRoomId(roomId);
 
         if (playerIds != null) {
@@ -285,7 +293,7 @@ public class ClientNetworkHandler {
         String playerId = (String) message.get("playerId");
         String playerName = (String) message.get("playerName");
 
-        GameState gameState = model.getGameState();
+        GameState gameState = new GameState(new GameState(model.getGameState()));
         Player player = new Player(playerId, playerName);
         gameState.addPlayer(player);
         gameState.addChatMessage(playerName + " joined the game");
@@ -297,7 +305,7 @@ public class ClientNetworkHandler {
     private void handlePlayerLeft(Message message) {
         String playerId = (String) message.get("playerId");
 
-        GameState gameState = model.getGameState();
+        GameState gameState = new GameState(new GameState(model.getGameState()));
         Player player = gameState.getPlayerById(playerId);
         if (player != null) {
             gameState.removePlayer(playerId);
@@ -310,7 +318,7 @@ public class ClientNetworkHandler {
     private void handlePlayerReady(Message message) {
         String playerId = (String) message.get("playerId");
 
-        GameState gameState = model.getGameState();
+        GameState gameState = new GameState(new GameState(model.getGameState()));
         Player player = gameState.getPlayerById(playerId);
         if (player != null) {
             player.setReady(true);
@@ -320,7 +328,7 @@ public class ClientNetworkHandler {
     }
 
     private void handleAllPlayersReady(Message message) {
-        GameState gameState = model.getGameState();
+        GameState gameState = new GameState(new GameState(model.getGameState()));
         gameState.addChatMessage("All players are ready! Wait for the game to start...");
         model.setGameState(gameState);
         model.setStatusMessage("All players are ready");
@@ -332,7 +340,7 @@ public class ClientNetworkHandler {
         String currentPlayerId = (String) message.get("currentPlayer");
         System.out.println("Current player: " + currentPlayerId);
 
-        GameState gameState = model.getGameState();
+        GameState gameState = new GameState(model.getGameState());
 
         gameState.setGameStarted(true);
         Player currentPlayer = null;
@@ -359,7 +367,7 @@ public class ClientNetworkHandler {
     private void handleGameState(Message message) {
         String currentPlayerId = (String) message.get("currentPlayer");
 
-        GameState gameState = model.getGameState();
+        GameState gameState = new GameState(model.getGameState());
 
         for (Player player : gameState.getPlayers()) {
             player.setCurrentTurn(player.getId().equals(currentPlayerId));
@@ -379,7 +387,7 @@ public class ClientNetworkHandler {
         int col = ((Double) message.get("col")).intValue();
         boolean horizontal = (Boolean) message.get("horizontal");
 
-        GameState gameState = model.getGameState();
+        GameState gameState = new GameState(model.getGameState());
         Player player = gameState.getPlayerById(playerId);
 
         if (player != null) {
@@ -399,7 +407,7 @@ public class ClientNetworkHandler {
         String content = (String) message.get("content");
         String sender = message.getSender();
 
-        GameState gameState = model.getGameState();
+        GameState gameState = new GameState(model.getGameState());
         gameState.addChatMessage(content);
         model.setGameState(gameState);
     }
@@ -408,7 +416,7 @@ public class ClientNetworkHandler {
         String winnerId = (String) message.get("winnerId");
         Map<String, Integer> finalScores = (Map<String, Integer>) message.get("finalScores");
 
-        GameState gameState = model.getGameState();
+        GameState gameState = new GameState(model.getGameState());
         gameState.setGameFinished(true);
 
         Player winner = gameState.getPlayerById(winnerId);
@@ -428,7 +436,7 @@ public class ClientNetworkHandler {
     }
 
     private void fillPlayerRacks() {
-        GameState gameState = model.getGameState();
+        GameState gameState = new GameState(model.getGameState());
 
         for (Player player : gameState.getPlayers()) {
             for (int i = 0; i < 7; i++) {

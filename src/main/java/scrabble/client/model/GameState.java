@@ -1,9 +1,12 @@
 package scrabble.client.model;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import scrabble.utils.TileBag.Tile;
 
 public class GameState {
@@ -28,21 +31,30 @@ public class GameState {
     }
 
     private BoardCell[][] board;
-    private List<Player> players;
-    private Player currentPlayer;
-    private boolean gameStarted;
-    private boolean gameFinished;
-    private String currentRoomId;
-    private List<String> chatMessages;
-    private Map<String, Object> gameSettings;
+    private ObservableList<Player> players = FXCollections.observableArrayList();
+    private ObjectProperty<Player> currentPlayer = new SimpleObjectProperty<>();
+    private BooleanProperty gameStarted = new SimpleBooleanProperty(false);
+    private BooleanProperty gameFinished = new SimpleBooleanProperty(false);
+    private StringProperty currentRoomId = new SimpleStringProperty("");
+    private ObservableList<String> chatMessages = FXCollections.observableArrayList();
+    private Map<String, Object> gameSettings = new HashMap<>();
 
     public GameState() {
         initializeBoard();
-        players = new ArrayList<>();
-        chatMessages = new ArrayList<>();
+        players = FXCollections.observableArrayList();
+        chatMessages = FXCollections.observableArrayList();
         gameSettings = new HashMap<>();
-        gameStarted = false;
-        gameFinished = false;
+        gameStarted.set(false);
+        gameFinished.set(false);
+    }
+
+    public GameState(GameState gameState) {
+        this();
+        players = gameState.players;
+        chatMessages = gameState.chatMessages;
+        gameSettings = gameState.gameSettings;
+        gameStarted = gameState.gameStarted;
+        gameFinished = gameState.gameFinished;
     }
 
     private void initializeBoard() {
@@ -72,20 +84,64 @@ public class GameState {
     }
 
     public BoardCell[][] getBoard() { return board; }
-    public List<Player> getPlayers() { return players; }
-    public Player getCurrentPlayer() { return currentPlayer; }
-    public boolean isGameStarted() { return gameStarted; }
-    public boolean isGameFinished() { return gameFinished; }
-    public String getCurrentRoomId() { return currentRoomId; }
+
+    public ObservableList<Player> getPlayers() {
+        return players;
+    }
+
+    public Player getCurrentPlayer() {
+        return currentPlayer.get();
+    }
+
+    public ObjectProperty<Player> currentPlayerProperty() {
+        return currentPlayer;
+    }
+
+    public boolean isGameStarted() {
+        return gameStarted.get();
+    }
+
+    public BooleanProperty gameStartedProperty() {
+        return gameStarted;
+    }
+
+    public boolean isGameFinished() {
+        return gameFinished.get();
+    }
+
+    public BooleanProperty gameFinishedProperty() {
+        return gameFinished;
+    }
+
+    public String getCurrentRoomId() {
+        return currentRoomId.get();
+    }
+
+    public StringProperty currentRoomIdProperty() {
+        return currentRoomId;
+    }
+
     public List<String> getChatMessages() { return chatMessages; }
     public Map<String, Object> getGameSettings() { return gameSettings; }
 
     public void setBoard(BoardCell[][] board) { this.board = board; }
-    public void setPlayers(List<Player> players) { this.players = players; }
-    public void setCurrentPlayer(Player currentPlayer) { this.currentPlayer = currentPlayer; }
-    public void setGameStarted(boolean gameStarted) { this.gameStarted = gameStarted; }
-    public void setGameFinished(boolean gameFinished) { this.gameFinished = gameFinished; }
-    public void setCurrentRoomId(String currentRoomId) { this.currentRoomId = currentRoomId; }
+    public void setPlayers(List<Player> players) { this.players.addAll(players); }
+
+    public void setCurrentPlayer(Player currentPlayer) {
+        this.currentPlayer.set(currentPlayer);
+    }
+
+    public void setGameStarted(boolean gameStarted) {
+        this.gameStarted.set(gameStarted);
+    }
+
+    public void setGameFinished(boolean gameFinished) {
+        this.gameFinished.set(gameFinished);
+    }
+
+    public void setCurrentRoomId(String currentRoomId) {
+        this.currentRoomId.set(currentRoomId);
+    }
 
     public void addChatMessage(String message) {
         chatMessages.add(message);

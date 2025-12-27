@@ -1,5 +1,6 @@
 package scrabble.client.view.components;
 
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -9,26 +10,27 @@ import java.util.List;
 
 public class RackView extends Pane {
     private static final double TILE_SPACING = 5;
-    private static final double RACK_HEIGHT = 70;
-    private static final double RACK_WIDTH = 7 * 50 + 6 * TILE_SPACING;
+    private static final double RACK_HEIGHT = TileView.SIZE + TILE_SPACING * 2;
+    private static final double RACK_WIDTH = 7 * TileView.SIZE + 6 * TILE_SPACING;
 
     private List<TileView> tileViews;
     private Rectangle rackBackground;
+    private javafx.event.EventHandler<TileView.TileDropEvent> tileDroppedHandler;
 
     public RackView() {
         tileViews = new ArrayList<>();
+        tileDroppedHandler = null;
         initializeView();
     }
 
     private void initializeView() {
-        setPrefSize(RACK_WIDTH, RACK_HEIGHT);
+//        setPrefSize(RACK_WIDTH, RACK_HEIGHT);
 
-        
         rackBackground = new Rectangle(RACK_WIDTH, RACK_HEIGHT);
         rackBackground.setArcWidth(15);
         rackBackground.setArcHeight(15);
-        rackBackground.setFill(Color.SADDLEBROWN);
-        rackBackground.setStroke(Color.SIENNA);
+        rackBackground.setFill(Color.valueOf("#588157"));
+        rackBackground.setStroke(Color.valueOf("#3A5A40"));
         rackBackground.setStrokeWidth(2);
 
         getChildren().add(rackBackground);
@@ -39,6 +41,11 @@ public class RackView extends Pane {
         tileViews.add(tileView);
         updateTilePositions();
         getChildren().add(tileView);
+        
+        // Register event handler for this tile
+        if (tileDroppedHandler != null) {
+            tileView.addEventHandler(TileView.TileDropEvent.TILE_DROPPED, tileDroppedHandler);
+        }
     }
 
     public void removeTile(String tileId) {
@@ -77,6 +84,7 @@ public class RackView extends Pane {
     }
 
     public void setOnTileDropped(javafx.event.EventHandler<TileView.TileDropEvent> handler) {
+        this.tileDroppedHandler = handler;
         for (TileView tileView : tileViews) {
             tileView.addEventHandler(TileView.TileDropEvent.TILE_DROPPED, handler);
         }

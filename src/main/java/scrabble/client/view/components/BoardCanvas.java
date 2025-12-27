@@ -210,6 +210,25 @@ public class BoardCanvas extends Canvas {
             draggedTile = null;
             drawBoard();
         });
+
+        setOnMouseClicked(event -> {
+            int col = (int) (event.getX() / CELL_SIZE);
+            int row = (int) (event.getY() / CELL_SIZE);
+
+            if (row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE) {
+                if (gameState != null && gameState.getCell(row, col).hasTile()) {
+                    TileBag.Tile clickedTile = gameState.getCell(row, col).getTile();
+                    TileClickedEvent clickEvent = new TileClickedEvent(
+                            TileClickedEvent.TILE_CLICKED,
+                            clickedTile,
+                            row,
+                            col
+                    );
+                    fireEvent(clickEvent);
+                }
+            }
+            event.consume();
+        });
     }
 
     public void setDraggedTile(TileBag.Tile tile) {
@@ -229,5 +248,34 @@ public class BoardCanvas extends Canvas {
         setWidth(width);
         setHeight(height);
         drawBoard();
+    }
+
+    public static class TileClickedEvent extends javafx.event.Event {
+        public static final javafx.event.EventType<TileClickedEvent> TILE_CLICKED =
+                new javafx.event.EventType<>(javafx.event.Event.ANY, "TILE_CLICKED");
+
+        private final TileBag.Tile tile;
+        private final int row;
+        private final int col;
+
+        public TileClickedEvent(javafx.event.EventType<? extends javafx.event.Event> eventType,
+                                TileBag.Tile tile, int row, int col) {
+            super(eventType);
+            this.tile = tile;
+            this.row = row;
+            this.col = col;
+        }
+
+        public TileBag.Tile getTile() {
+            return tile;
+        }
+
+        public int getRow() {
+            return row;
+        }
+
+        public int getCol() {
+            return col;
+        }
     }
 }

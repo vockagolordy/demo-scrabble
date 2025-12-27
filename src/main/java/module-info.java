@@ -9,6 +9,7 @@ module scrabble {
     exports scrabble;
     exports scrabble.client.controller;
     exports scrabble.server;
+    exports scrabble.client.view.components to javafx.fxml;
 
     opens scrabble to javafx.graphics, com.google.gson;
     opens scrabble.client.controller to javafx.fxml;
