@@ -1,5 +1,3 @@
-// scrabble/server/network/ClientHandler.java
-
 package scrabble.server.network;
 
 import scrabble.client.model.GameState;
@@ -7,7 +5,6 @@ import scrabble.protocol.ProtocolParser;
 import scrabble.server.model.ServerModel;
 import scrabble.server.model.GameRoom;
 import scrabble.protocol.Message;
-import scrabble.protocol.MessageType;
 import scrabble.server.model.WordChecker;
 import scrabble.utils.TileBag;
 
@@ -77,7 +74,7 @@ public class ClientHandler {
         Message response = ProtocolParser.createConnectResponseMessage(clientId, "connected");
         sendMessage(response);
 
-        // Отправляем список доступных комнат
+        
         sendRoomList();
     }
 
@@ -91,7 +88,7 @@ public class ClientHandler {
         Message response = ProtocolParser.createCreateRoomResponseMessage(room.getId(), room.getName());
         sendMessage(response);
 
-        // Уведомляем всех о новом списке комнат
+        
         sendRoomList();
         broadcastRoomListUpdate();
     }
@@ -106,7 +103,7 @@ public class ClientHandler {
             Message response = ProtocolParser.createJoinRoomResponseMessage(roomId, room.getName(), new ArrayList<>(room.getPlayerIds()));
             sendMessage(response);
 
-            // Уведомляем других игроков в комнате
+            
             Message notification = ProtocolParser.createPlayerJoinedMessage(clientId, playerName);
             broadcastToRoom(notification, clientId);
         } else {
@@ -133,7 +130,7 @@ public class ClientHandler {
             Message notification = ProtocolParser.createPlayerReadyNotificationMessage(clientId);
             broadcastToRoom(notification, null);
 
-            // Если все готовы, уведомляем создателя
+            
             if (room.allPlayersReady() && room.getCreatorId().equals(clientId)) {
                 Message readyNotification = ProtocolParser.createAllPlayersReadyMessage();
                 sendMessage(readyNotification);
@@ -145,7 +142,7 @@ public class ClientHandler {
         if (currentRoomId != null) {
             GameRoom room = model.getRoom(currentRoomId);
             if (room.getCreatorId().equals(clientId) && room.startGame()) {
-                // Отправляем начальное состояние игры всем игрокам
+                
                 Message gameStartMsg = ProtocolParser.createGameStartResponseMessage(room.getCurrentPlayerId());
                 broadcastToRoom(gameStartMsg, null);
             }
@@ -163,14 +160,14 @@ public class ClientHandler {
                 boolean horizontal = (Boolean) message.get("horizontal");
                 List<String> tileIds = Arrays.asList((String[]) message.get("tileIds"));
 
-                // Используем WordChecker для проверки
+                
                 WordChecker.ValidationResult result = model.getWordChecker().validateMove(
                         word, row, col, horizontal,
                         getCurrentBoardState(room), tileIds, clientId, room
                 );
 
                 if (result.isValid()) {
-                    // Обновляем доску через WordChecker
+                    
                     model.getWordChecker().updateBoard(
                             getCurrentBoardState(room), word, row, col,
                             horizontal, getPlayerTiles(tileIds)
@@ -195,14 +192,14 @@ public class ClientHandler {
     }
 
     private GameState.BoardCell[][] getCurrentBoardState(GameRoom room) {
-        // В реальной реализации должен возвращать текущее состояние доски
-        // Для простоты создаем пустую доску
+        
+        
         GameState gameState = new GameState();
         return gameState.getBoard();
     }
 
     private List<TileBag.Tile> getPlayerTiles(List<String> tileIds) {
-        // В реальной реализации должен возвращать фишки игрока
+        
         List<scrabble.utils.TileBag.Tile> tiles = new ArrayList<>();
         for (String id : tileIds) {
             tiles.add(new scrabble.utils.TileBag.Tile(id.charAt(0), 1));
@@ -246,7 +243,7 @@ public class ClientHandler {
     private void broadcastRoomListUpdate() {
         Message message = ProtocolParser.createRoomListMessage(model.getAvailableRooms());
 
-        // Рассылаем всем подключенным клиентам
+        
         for (ClientHandler handler : model.getAllClientHandlers()) {
             if (handler != this) {
                 handler.sendMessage(message);

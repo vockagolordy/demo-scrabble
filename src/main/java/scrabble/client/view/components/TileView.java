@@ -1,5 +1,3 @@
-// scrabble/client/view/components/TileView.java
-
 package scrabble.client.view.components;
 
 import javafx.scene.layout.StackPane;
@@ -31,7 +29,7 @@ public class TileView extends StackPane {
     }
 
     private void initializeView() {
-        // Фон фишки
+        
         background = new Rectangle(SIZE, SIZE);
         background.setArcWidth(10);
         background.setArcHeight(10);
@@ -39,17 +37,17 @@ public class TileView extends StackPane {
         background.setStroke(Color.DARKGOLDENROD);
         background.setStrokeWidth(2);
 
-        // Текст буквы
+        
         letterText = new Text(String.valueOf(tile.getLetter()).toUpperCase());
         letterText.setFont(Font.font("Arial", FontWeight.BOLD, FONT_SIZE));
         letterText.setFill(Color.BLACK);
 
-        // Текст очков
+        
         pointsText = new Text(String.valueOf(tile.getPoints()));
         pointsText.setFont(Font.font("Arial", FontWeight.NORMAL, FONT_SIZE * 0.6));
         pointsText.setFill(Color.DARKRED);
 
-        // Позиционирование
+        
         letterText.setTranslateY(-SIZE * 0.1);
         pointsText.setTranslateX(SIZE * 0.3);
         pointsText.setTranslateY(SIZE * 0.3);
@@ -83,7 +81,7 @@ public class TileView extends StackPane {
                 setTranslateX(0);
                 setTranslateY(0);
 
-                // Создаем и отправляем событие
+                
                 TileDropEvent dropEvent = new TileDropEvent(TileDropEvent.TILE_DROPPED, tile,
                         event.getSceneX(), event.getSceneY());
                 fireEvent(dropEvent);
@@ -106,7 +104,7 @@ public class TileView extends StackPane {
         }
     }
 
-    // Событие для drag & drop
+    
     public static class TileDropEvent extends javafx.event.Event {
         public static final EventType<TileDropEvent> TILE_DROPPED =
                 new EventType<>(javafx.event.Event.ANY, "TILE_DROPPED");

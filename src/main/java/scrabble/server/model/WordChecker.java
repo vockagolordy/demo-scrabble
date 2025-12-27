@@ -1,5 +1,3 @@
-// scrabble/server/model/WordChecker.java
-
 package scrabble.server.model;
 
 import scrabble.client.model.GameState;
@@ -11,45 +9,45 @@ import java.util.*;
 public class WordChecker {
     private final ServerModel serverModel;
 
-    // Типы бонусных клеток (стандартные для английского Scrabble)
+    
     private static final String[][] CELL_TYPES = new String[15][15];
 
     static {
-        // Инициализация бонусных клеток
+        
         initializeCellTypes();
     }
 
     private static void initializeCellTypes() {
-        // Сначала инициализируем все клетки как обычные
+        
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
                 CELL_TYPES[i][j] = "";
             }
         }
 
-        // Triple Word Score (TW) - красные клетки
+        
         int[][] twCells = {{0,0}, {0,7}, {0,14}, {7,0}, {7,14}, {14,0}, {14,7}, {14,14}};
         for (int[] cell : twCells) {
             CELL_TYPES[cell[0]][cell[1]] = "TW";
         }
 
-        // Double Word Score (DW) - розовые клетки
+        
         int[][] dwCells = {{1,1}, {1,13}, {2,2}, {2,12}, {3,3}, {3,11}, {4,4}, {4,10},
                 {10,4}, {10,10}, {11,3}, {11,11}, {12,2}, {12,12}, {13,1}, {13,13}};
         for (int[] cell : dwCells) {
             CELL_TYPES[cell[0]][cell[1]] = "DW";
         }
 
-        // Центральная клетка - стартовая (тоже Double Word)
+        
         CELL_TYPES[7][7] = "DW";
 
-        // Double Letter Score (DL) - голубые клетки
+        
         for (int i = 1; i < 14; i++) {
             CELL_TYPES[i][i] = "DL";
             CELL_TYPES[i][14-i] = "DL";
         }
 
-        // Дополнительные DL клетки
+        
         int[][] dlCells = {{0,3}, {0,11}, {2,6}, {2,8}, {3,0}, {3,7}, {3,14},
                 {6,2}, {6,6}, {6,8}, {6,12}, {7,3}, {7,11},
                 {8,2}, {8,6}, {8,8}, {8,12}, {11,0}, {11,7}, {11,14},
@@ -58,7 +56,7 @@ public class WordChecker {
             CELL_TYPES[cell[0]][cell[1]] = "DL";
         }
 
-        // Triple Letter Score (TL) - синие клетки
+        
         int[][] tlCells = {{1,5}, {1,9}, {5,1}, {5,5}, {5,9}, {5,13},
                 {9,1}, {9,5}, {9,9}, {9,13}, {13,5}, {13,9}};
         for (int[] cell : tlCells) {
@@ -75,35 +73,35 @@ public class WordChecker {
                                          String playerId, GameRoom room) {
         ValidationResult result = new ValidationResult();
 
-        // Базовая проверка
+        
         if (!basicValidation(word, row, col, horizontal, result)) {
             return result;
         }
 
         word = word.toUpperCase();
 
-        // Проверка размещения на доске
+        
         if (!canPlaceWord(word, row, col, horizontal, board)) {
             result.setValid(false);
             result.setMessage("Cannot place word at the specified position");
             return result;
         }
 
-        // Проверка первого хода (должен быть через центр)
+        
         if (isFirstMove(board) && !isCrossingCenter(word, row, col, horizontal)) {
             result.setValid(false);
             result.setMessage("First move must pass through the center cell (H8)");
             return result;
         }
 
-        // Проверка фишек игрока
+        
         if (!validatePlayerTiles(word, tileIds, playerId, room)) {
             result.setValid(false);
             result.setMessage("You don't have the required tiles for this move");
             return result;
         }
 
-        // Поиск всех новых слов
+        
         List<WordInfo> allNewWords = findAllNewWords(word, row, col, horizontal, board);
         if (allNewWords.isEmpty() && !isFirstMove(board)) {
             result.setValid(false);
@@ -111,7 +109,7 @@ public class WordChecker {
             return result;
         }
 
-        // Проверка всех новых слов в словаре
+        
         for (WordInfo wordInfo : allNewWords) {
             if (!DictionaryLoader.isValidWord(wordInfo.word)) {
                 result.setValid(false);
@@ -121,10 +119,10 @@ public class WordChecker {
             result.addFormedWord(wordInfo.word);
         }
 
-        // Расчет очков
+        
         int totalScore = calculateTotalScore(allNewWords, board, word, row, col, horizontal);
 
-        // Бонус за использование всех 7 фишек (BINGO)
+        
         if (word.length() == 7) {
             totalScore += 50;
             result.setMessage("BINGO! +50 points for using all tiles!");
@@ -148,7 +146,7 @@ public class WordChecker {
 
         word = word.trim().toUpperCase();
 
-        // Проверяем, что слово состоит только из английских букв
+        
         if (!word.matches("^[A-Z]+$")) {
             result.setValid(false);
             result.setMessage("Word must contain only English letters");
@@ -192,12 +190,12 @@ public class WordChecker {
 
             GameState.BoardCell cell = board[r][c];
 
-            // Проверка перекрытия с несовпадающей буквой
+            
             if (cell.hasTile() && Character.toUpperCase(cell.getTile().getLetter()) != word.charAt(i)) {
                 return false;
             }
 
-            // Проверка соседних клеток для определения касания
+            
             if (!cell.hasTile()) {
                 if (hasAdjacentTile(r, c, board)) {
                     touchesExisting = true;
@@ -211,7 +209,7 @@ public class WordChecker {
     }
 
     private boolean hasAdjacentTile(int row, int col, GameState.BoardCell[][] board) {
-        // Проверяем все четыре направления
+        
         int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
         for (int[] dir : directions) {
@@ -252,15 +250,15 @@ public class WordChecker {
     }
 
     private boolean validatePlayerTiles(String word, List<String> tileIds, String playerId, GameRoom room) {
-        // В реальной реализации нужно проверить, что у игрока есть эти фишки
-        // и что tileIds соответствуют буквам в слове
+        
+        
 
         if (tileIds == null || tileIds.size() != word.length()) {
             return false;
         }
 
-        // Здесь должна быть логика проверки фишек игрока
-        // Пока возвращаем true для упрощения
+        
+        
         return true;
     }
 
@@ -268,15 +266,15 @@ public class WordChecker {
                                            GameState.BoardCell[][] board) {
         List<WordInfo> allWords = new ArrayList<>();
 
-        // Добавляем основное слово
+        
         allWords.add(new WordInfo(mainWord, row, col, horizontal));
 
-        // Ищем перпендикулярные слова
+        
         for (int i = 0; i < mainWord.length(); i++) {
             int r = horizontal ? row : row + i;
             int c = horizontal ? col + i : col;
 
-            // Если это новая фишка, ищем слово в перпендикулярном направлении
+            
             if (!board[r][c].hasTile()) {
                 WordInfo perpendicularWord = findPerpendicularWord(r, c, !horizontal, board, mainWord.charAt(i));
                 if (perpendicularWord != null && perpendicularWord.word.length() > 1) {
@@ -294,7 +292,7 @@ public class WordChecker {
         int startRow = row;
         int startCol = col;
 
-        // Идем назад от новой фишки
+        
         int r = row, c = col;
         if (horizontal) {
             while (c >= 0) {
@@ -326,7 +324,7 @@ public class WordChecker {
             if (r < 0) startRow = 0;
         }
 
-        // Идем вперед от новой фишки
+        
         r = horizontal ? row : row + 1;
         c = horizontal ? col + 1 : col;
         if (horizontal) {
@@ -385,13 +383,13 @@ public class WordChecker {
             GameState.BoardCell cell = board[r][c];
             String cellType = CELL_TYPES[r][c];
 
-            // Проверяем, является ли фишка бланком
+            
             if (cell.hasTile() && cell.getTile().getLetter() == ' ') {
                 hasBlankTile = true;
                 letterScore = 0;
             }
 
-            // Если клетка пустая (новая фишка), применяем бонусы
+            
             if (!cell.hasTile()) {
                 if (cellType.equals("DL")) {
                     letterScore *= 2;
@@ -407,7 +405,7 @@ public class WordChecker {
             wordScore += letterScore;
         }
 
-        // Если использован бланк, бонусы слова не применяются
+        
         if (hasBlankTile) {
             return wordScore;
         }
@@ -415,7 +413,7 @@ public class WordChecker {
         return wordScore * wordMultiplier;
     }
 
-    // Вспомогательный класс для хранения информации о слове
+    
     private static class WordInfo {
         String word;
         int row;
@@ -452,14 +450,14 @@ public class WordChecker {
         public void setFormedWords(List<String> formedWords) { this.formedWords = formedWords; }
     }
 
-    // Дополнительные методы для серверной логики
+    
 
     /**
      * Проверяет, можно ли сделать ход в данной позиции
      */
     public boolean canMakeMove(GameState.BoardCell[][] board, String playerId, GameRoom room) {
-        // Проверка, что игрок имеет фишки
-        // Проверка, что есть возможные ходы
+        
+        
         return true;
     }
 
@@ -469,16 +467,16 @@ public class WordChecker {
     public List<String> getPossibleWords(List<Character> availableLetters) {
         List<String> possibleWords = new ArrayList<>();
 
-        // Преобразуем буквы в строку для поиска по шаблону
+        
         StringBuilder letters = new StringBuilder();
         for (Character c : availableLetters) {
             letters.append(Character.toUpperCase(c));
         }
 
-        // Это упрощенная реализация - в реальном Scrabble нужен более сложный алгоритм
+        
         String lettersStr = letters.toString();
 
-        // Проверяем некоторые базовые комбинации
+        
         if (lettersStr.contains("T") && lettersStr.contains("E") && lettersStr.contains("S") && lettersStr.contains("T")) {
             possibleWords.add("TEST");
         }
@@ -507,7 +505,7 @@ public class WordChecker {
             if (!board[r][c].hasTile()) {
                 char neededLetter = Character.toUpperCase(word.charAt(i));
 
-                // Находим соответствующую фишку
+                
                 for (scrabble.utils.TileBag.Tile tile : tiles) {
                     if (Character.toUpperCase(tile.getLetter()) == neededLetter) {
                         board[r][c].setTile(tile);
@@ -522,9 +520,9 @@ public class WordChecker {
      * Проверяет конец игры
      */
     public boolean isGameOver(GameState.BoardCell[][] board, scrabble.utils.TileBag tileBag) {
-        // Игра заканчивается, когда:
-        // 1. Закончились фишки в мешке
-        // 2. Один из игроков использовал все свои фишки
+        
+        
+        
         return tileBag.remainingTiles() == 0;
     }
 

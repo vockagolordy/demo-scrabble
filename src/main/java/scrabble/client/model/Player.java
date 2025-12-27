@@ -1,5 +1,3 @@
-// scrabble/client/model/Player.java
-
 package scrabble.client.model;
 
 import java.util.ArrayList;

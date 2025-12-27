@@ -1,7 +1,6 @@
 package scrabble.client.network;
 
 import scrabble.protocol.Message;
-import scrabble.protocol.MessageType;
 import scrabble.client.model.ClientModel;
 import scrabble.client.model.GameState;
 import scrabble.client.model.Player;
@@ -16,7 +15,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import com.google.gson.reflect.TypeToken;
 import scrabble.protocol.ProtocolParser;
 
 public class ClientNetworkHandler {
@@ -59,7 +57,7 @@ public class ClientNetworkHandler {
     }
 
     private void startNetworkThreads() {
-        // Поток отправки
+        
         executor.submit(() -> {
             try {
                 while (running) {
@@ -73,7 +71,7 @@ public class ClientNetworkHandler {
             }
         });
 
-        // Поток приема
+        
         executor.submit(() -> {
             ByteBuffer buffer = ByteBuffer.allocate(4096);
             StringBuilder messageBuilder = new StringBuilder();
@@ -93,7 +91,7 @@ public class ClientNetworkHandler {
                         String chunk = StandardCharsets.UTF_8.decode(buffer).toString();
                         messageBuilder.append(chunk);
 
-                        // Обработка JSON сообщений
+                        
                         String data = messageBuilder.toString();
                         int processed = 0;
                         int start = 0;
@@ -102,7 +100,7 @@ public class ClientNetworkHandler {
                             int jsonStart = data.indexOf('{', start);
                             if (jsonStart == -1) break;
 
-                            // Находим конец JSON объекта
+                            
                             int braceCount = 0;
                             boolean inString = false;
                             int jsonEnd = -1;
@@ -130,7 +128,7 @@ public class ClientNetworkHandler {
                                 processed++;
                                 start = jsonEnd;
                             } else {
-                                break; // Неполный JSON
+                                break; 
                             }
                         }
 
@@ -453,7 +451,7 @@ public class ClientNetworkHandler {
                 socketChannel.close();
             }
         } catch (IOException e) {
-            // Игнорируем ошибку закрытия
+            
         }
 
         Platform.runLater(() -> {

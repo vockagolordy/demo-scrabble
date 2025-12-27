@@ -1,5 +1,3 @@
-// scrabble/server/controller/ServerController.java
-
 package scrabble.server.controller;
 
 import scrabble.server.model.ServerModel;
@@ -55,7 +53,6 @@ public class ServerController {
     }
 
     public int getActiveRoomsCount() {
-        // Нужен метод для подсчета комнат
         return 0;
     }
 }

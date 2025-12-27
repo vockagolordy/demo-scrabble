@@ -1,5 +1,3 @@
-// scrabble/server/network/ServerNetworkHandler.java
-
 package scrabble.server.network;
 
 import scrabble.server.model.*;
@@ -87,7 +85,7 @@ public class ServerNetworkHandler {
         int bytesRead = channel.read(buffer);
 
         if (bytesRead == -1) {
-            // Клиент отключился
+            
             handler.disconnect();
             key.cancel();
             return;

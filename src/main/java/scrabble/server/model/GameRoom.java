@@ -1,5 +1,3 @@
-// scrabble/server/model/GameRoom.java
-
 package scrabble.server.model;
 
 import java.util.*;
@@ -62,9 +60,9 @@ public class GameRoom {
         readyPlayers.remove(playerId);
 
         if (playerId.equals(creatorId) && !playerIds.isEmpty()) {
-            // Назначаем нового создателя
+            
             String newCreator = playerIds.iterator().next();
-            // В реальной реализации нужно обновить creatorId
+            
         }
     }
 

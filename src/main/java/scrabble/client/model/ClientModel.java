@@ -1,11 +1,8 @@
-// scrabble/client/model/ClientModel.java
-
 package scrabble.client.model;
 
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 import java.util.List;
-import java.util.ArrayList;
 import scrabble.utils.TileBag;
 
 public class ClientModel {

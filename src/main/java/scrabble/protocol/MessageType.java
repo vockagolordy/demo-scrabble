@@ -1,5 +1,3 @@
-// scrabble/protocol/MessageType.java
-
 package scrabble.protocol;
 
 public enum MessageType {

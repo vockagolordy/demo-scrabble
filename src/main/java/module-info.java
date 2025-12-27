@@ -1,4 +1,3 @@
-// module-info.java
 module scrabble {
     requires javafx.controls;
     requires javafx.fxml;

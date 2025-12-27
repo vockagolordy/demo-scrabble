@@ -1,8 +1,5 @@
-// scrabble/client/view/components/RackView.java
-
 package scrabble.client.view.components;
 
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -26,7 +23,7 @@ public class RackView extends Pane {
     private void initializeView() {
         setPrefSize(RACK_WIDTH, RACK_HEIGHT);
 
-        // Фон полки для фишек
+        
         rackBackground = new Rectangle(RACK_WIDTH, RACK_HEIGHT);
         rackBackground.setArcWidth(15);
         rackBackground.setArcHeight(15);

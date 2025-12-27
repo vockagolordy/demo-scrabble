@@ -1,5 +1,3 @@
-// scrabble/utils/TileBag.java
-
 package scrabble.utils;
 
 import java.util.ArrayList;
@@ -44,7 +42,7 @@ public class TileBag {
     private void initializeEnglishTiles() {
         tiles = new ArrayList<>();
 
-        // Стандартное английское распределение фишек для Scrabble
+        
         addTile('A', 1, 9);
         addTile('B', 3, 2);
         addTile('C', 3, 2);
@@ -71,7 +69,7 @@ public class TileBag {
         addTile('X', 8, 1);
         addTile('Y', 4, 2);
         addTile('Z', 10, 1);
-        addTile(' ', 0, 2); // Blank tiles (wildcards)
+        addTile(' ', 0, 2); 
 
         System.out.println("Инициализирован мешок с " + tiles.size() + " английскими фишками");
         shuffle();
@@ -116,7 +114,7 @@ public class TileBag {
         return drawn;
     }
 
-    // Метод для получения стоимости буквы (для WordChecker)
+    
     public static int getLetterValue(char letter) {
         letter = Character.toUpperCase(letter);
         switch (letter) {
@@ -135,20 +133,20 @@ public class TileBag {
                 return 8;
             case 'Q': case 'Z':
                 return 10;
-            case ' ': // Blank tile
+            case ' ': 
                 return 0;
             default:
                 return 0;
         }
     }
 
-    // Метод для проверки, является ли буква гласной (может пригодиться)
+    
     public static boolean isVowel(char letter) {
         letter = Character.toUpperCase(letter);
         return letter == 'A' || letter == 'E' || letter == 'I' || letter == 'O' || letter == 'U' || letter == 'Y';
     }
 
-    // Метод для проверки, является ли буква согласной
+    
     public static boolean isConsonant(char letter) {
         letter = Character.toUpperCase(letter);
         return !isVowel(letter) && letter >= 'A' && letter <= 'Z';

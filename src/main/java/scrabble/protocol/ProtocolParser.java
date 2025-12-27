@@ -1,5 +1,3 @@
-// scrabble/protocol/ProtocolParser.java
-
 package scrabble.protocol;
 
 import com.google.gson.Gson;

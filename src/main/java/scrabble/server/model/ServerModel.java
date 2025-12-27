@@ -1,5 +1,3 @@
-// scrabble/server/model/ServerModel.java
-
 package scrabble.server.model;
 
 import java.util.*;
@@ -67,7 +65,7 @@ public class ServerModel {
 
     public void unregisterClient(String clientId) {
         connectedClients.remove(clientId);
-        // Удаляем игрока из всех комнат
+        
         for (GameRoom room : rooms.values()) {
             room.removePlayer(clientId);
         }

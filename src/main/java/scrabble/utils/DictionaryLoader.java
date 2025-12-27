@@ -1,5 +1,3 @@
-// scrabble/utils/DictionaryLoader.java
-
 package scrabble.utils;
 
 import java.io.BufferedReader;
@@ -32,7 +30,7 @@ public class DictionaryLoader {
                     dictionary.add(word);
                     loadedCount++;
 
-                    // Для отладки выводим прогресс каждые 10000 слов
+                    
                     if (loadedCount % 10000 == 0) {
                         System.out.println("Загружено " + loadedCount + " английских слов...");
                     }
@@ -44,7 +42,7 @@ public class DictionaryLoader {
             System.err.println("Ошибка загрузки английского словаря: " + e.getMessage());
             System.err.println("Проверьте наличие файла " + DICTIONARY_FILE + " в resources");
 
-            // В случае ошибки создаем минимальный словарь для тестирования
+            
             createFallbackDictionary();
         }
     }
@@ -68,22 +66,22 @@ public class DictionaryLoader {
             return false;
         }
 
-        // Приводим к верхнему регистру и проверяем
+        
         String normalizedWord = word.trim().toUpperCase();
 
-        // Проверяем, что слово состоит только из букв
+        
         if (!normalizedWord.matches("^[A-Z]+$")) {
             return false;
         }
 
-        // Загружаем словарь, если еще не загружен
+        
         if (dictionary == null) {
             loadDictionary();
         }
 
         boolean isValid = dictionary.contains(normalizedWord);
 
-        // Для отладки
+        
         if (!isValid && normalizedWord.length() <= 10) {
             System.out.println("Слово не найдено в словаре: " + normalizedWord);
         }
@@ -95,7 +93,7 @@ public class DictionaryLoader {
         return isValidWord(word);
     }
 
-    // Метод для проверки префикса (может быть полезен для поиска слов)
+    
     public static boolean hasWordsWithPrefix(String prefix) {
         if (prefix == null || prefix.isEmpty() || dictionary == null) {
             return false;
@@ -110,7 +108,7 @@ public class DictionaryLoader {
         return false;
     }
 
-    // Метод для получения всех слов заданной длины
+    
     public static Set<String> getWordsOfLength(int length) {
         if (dictionary == null) {
             loadDictionary();
@@ -125,7 +123,7 @@ public class DictionaryLoader {
         return result;
     }
 
-    // Метод для поиска слов по маске (например, "C?T" для CAT, COT и т.д.)
+    
     public static Set<String> findWordsByPattern(String pattern) {
         if (pattern == null || pattern.isEmpty() || dictionary == null) {
             return new HashSet<>();

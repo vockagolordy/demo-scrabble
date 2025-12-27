@@ -1,5 +1,3 @@
-// scrabble/client/model/GameState.java
-
 package scrabble.client.model;
 
 import java.util.ArrayList;
@@ -11,7 +9,7 @@ import scrabble.utils.TileBag.Tile;
 public class GameState {
     public static class BoardCell {
         private Tile tile;
-        private String multiplier; // "DW", "TW", "DL", "TL", null
+        private String multiplier; 
         private int row;
         private int col;
 
@@ -50,20 +48,20 @@ public class GameState {
     private void initializeBoard() {
         board = new BoardCell[15][15];
 
-        // Инициализация доски с бонусами
+        
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
                 String multiplier = null;
 
-                // Углы - утроение слова
+                
                 if ((i == 0 || i == 14) && (j == 0 || j == 14)) {
                     multiplier = "TW";
                 }
-                // Центр - удвоение слова
+                
                 else if (i == 7 && j == 7) {
                     multiplier = "DW";
                 }
-                // Диагонали - удвоение буквы
+                
                 else if (i == j || i == 14 - j) {
                     multiplier = "DL";
                 }

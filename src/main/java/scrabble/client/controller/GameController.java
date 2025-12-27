@@ -1,5 +1,3 @@
-// scrabble/client/controller/GameController.java
-
 package scrabble.client.controller;
 
 import javafx.fxml.FXML;
@@ -18,7 +16,6 @@ import scrabble.client.view.components.BoardCanvas;
 import scrabble.client.view.components.RackView;
 import scrabble.client.view.components.TileView;
 import scrabble.protocol.Message;
-import scrabble.protocol.MessageType;
 import scrabble.protocol.ProtocolParser;
 import scrabble.utils.TileBag;
 import java.util.*;
@@ -52,7 +49,7 @@ public class GameController {
     private ObservableList<PlayerScore> scoreData;
     private Map<String, Label> playerScoreLabels;
     private Set<String> selectedTilesForExchange;
-    private Map<String, int[]> placedTiles; // tileId -> [row, col]
+    private Map<String, int[]> placedTiles; 
     private javafx.animation.Timeline gameTimer;
     private long startTime;
     private boolean isMyTurn;
@@ -85,16 +82,16 @@ public class GameController {
         scoreColumn.setCellValueFactory(cell ->
                 new javafx.beans.property.SimpleIntegerProperty(cell.getValue().getScore()).asObject());
 
-        // Настройка обработчиков событий для drag & drop
+        
         rackView.setOnTileDropped(this::handleTileDrop);
 
-        // Настройка двойного клика для выбора фишек для обмена
+        
         rackView.setOnMouseClicked(this::handleRackClick);
 
-        // Инициализация таймера
+        
         initializeTimer();
 
-        // Настройка кнопок
+        
         setupButtons();
     }
 
@@ -102,12 +99,12 @@ public class GameController {
         this.model = model;
         updateGameState();
 
-        // Подписываемся на изменения состояния игры
+        
         model.gameStateProperty().addListener((obs, oldState, newState) -> {
             updateGameState();
         });
 
-        // Заполняем полку фишками игрока
+        
         fillPlayerRack();
     }
 
@@ -119,7 +116,7 @@ public class GameController {
         GameState gameState = model.getGameState();
 
         if (gameState != null) {
-            // Обновляем название комнаты
+            
             String roomId = gameState.getCurrentRoomId();
             if (roomId != null && !roomId.isEmpty()) {
                 String roomName = roomId.split("_")[0];
@@ -128,7 +125,7 @@ public class GameController {
                 roomNameLabel.setText("Комната: не выбрана");
             }
 
-            // Обновляем информацию о текущем ходе
+            
             if (gameState.getCurrentPlayer() != null) {
                 isMyTurn = gameState.getCurrentPlayer().getId().equals(model.getPlayerId());
                 turnLabel.setText(isMyTurn ? "Ваш ход!" :
@@ -136,37 +133,37 @@ public class GameController {
                 turnLabel.getStyleClass().removeAll("my-turn", "opponent-turn");
                 turnLabel.getStyleClass().add(isMyTurn ? "my-turn" : "opponent-turn");
 
-                // Активируем/деактивируем кнопки
+                
                 boolean canMakeMove = isMyTurn && !gameState.isGameFinished();
                 submitButton.setDisable(!canMakeMove || placedTiles.isEmpty());
                 skipButton.setDisable(!canMakeMove);
                 exchangeButton.setDisable(!canMakeMove || selectedTilesForExchange.isEmpty());
 
-                // Если начался наш ход, сбрасываем таймер
+                
                 if (isMyTurn) {
                     startTimer();
                 }
             }
 
-            // Обновляем список игроков
+            
             updatePlayersDisplay(gameState.getPlayers());
 
-            // Обновляем таблицу очков
+            
             updateScoreTable(gameState.getPlayers());
 
-            // Обновляем историю ходов
+            
             updateMovesHistory(gameState.getChatMessages());
 
-            // Обновляем игровой чат
+            
             updateGameChat(gameState.getChatMessages());
 
-            // Обновляем счетчик фишек
+            
             tilesLeftLabel.setText("Фишек осталось: " + model.getTileBag().remainingTiles());
 
-            // Обновляем игровое поле
+            
             boardCanvas.setGameState(gameState);
 
-            // Обновляем состояние игры
+            
             if (gameState.isGameFinished()) {
                 handleGameFinished();
             }
@@ -188,18 +185,18 @@ public class GameController {
             Label scoreLabel = new Label("Очки: " + player.getScore());
             scoreLabel.getStyleClass().add("player-score");
 
-            // Выделяем текущего игрока
+            
             if (player.isCurrentTurn()) {
                 playerBox.getStyleClass().add("current-turn");
             }
 
-            // Выделяем текущего пользователя
+            
             if (player.getId().equals(model.getPlayerId())) {
                 nameLabel.getStyleClass().add("current-user");
                 scoreLabel.getStyleClass().add("current-user-score");
             }
 
-            // Показываем статус готовности
+            
             if (!model.getGameState().isGameStarted() && player.isReady()) {
                 Label readyLabel = new Label("✓ Готов");
                 readyLabel.getStyleClass().add("ready-status");
@@ -219,10 +216,10 @@ public class GameController {
             scoreData.add(new PlayerScore(player.getName(), player.getScore()));
         }
 
-        // Сортируем по убыванию очков
+        
         scoreData.sort((p1, p2) -> Integer.compare(p2.getScore(), p1.getScore()));
 
-        // Обновляем общий счет текущего игрока
+        
         Player currentPlayer = model.getGameState().getPlayers().stream()
                 .filter(p -> p.getId().equals(model.getPlayerId()))
                 .findFirst()
@@ -234,7 +231,7 @@ public class GameController {
     }
 
     private void updateMovesHistory(List<String> chatMessages) {
-        // Фильтруем только сообщения о ходах
+        
         List<String> moves = new ArrayList<>();
         for (String msg : chatMessages) {
             if (msg.contains("выложил") || msg.contains("получил") || msg.contains("ход")) {
@@ -242,7 +239,7 @@ public class GameController {
             }
         }
 
-        // Обновляем ListView
+        
         if (movesHistory.getItems().size() != moves.size()) {
             movesHistory.getItems().setAll(moves);
             movesHistory.scrollTo(movesHistory.getItems().size() - 1);
@@ -298,7 +295,7 @@ public class GameController {
             long seconds = elapsedSeconds % 60;
             timerLabel.setText(String.format("Время: %02d:%02d", minutes, seconds));
 
-            // Предупреждение при долгом ходе
+            
             if (elapsedSeconds > 120) {
                 timerLabel.setTextFill(Color.RED);
                 statusLabel.setText("Внимание! У вас осталось мало времени на ход!");
@@ -314,14 +311,14 @@ public class GameController {
     }
 
     private void setupButtons() {
-        // Настройка действия для кнопки отправки сообщения в чат
+        
         sendGameChatButton.setOnAction(event -> handleGameChat());
         gameChatInput.setOnAction(event -> handleGameChat());
 
-        // Настройка кнопки обмена фишек
+        
         exchangeButton.setOnAction(event -> handleExchangeTiles());
 
-        // Настройка кнопки пропуска хода
+        
         skipButton.setOnAction(event -> {
             Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
             confirm.setTitle("Пропуск хода");
@@ -342,7 +339,7 @@ public class GameController {
             return;
         }
 
-        // Проверяем, что фишки размещены по прямой линии
+        
         if (!validateTilePlacement()) {
             statusLabel.setText("Фишки должны быть размещены по прямой линии!");
             showAlert("Ошибка", "Неправильное размещение",
@@ -350,7 +347,7 @@ public class GameController {
             return;
         }
 
-        // Формируем слово из размещенных фишек
+        
         StringBuilder wordBuilder = new StringBuilder();
         List<String> tileIds = new ArrayList<>();
 
@@ -374,12 +371,12 @@ public class GameController {
 
         String word = wordBuilder.toString();
 
-        // Берем координаты первой фишки
+        
         int[] firstPos = sortedTiles.get(0).getValue();
         int row = firstPos[0];
         int col = firstPos[1];
 
-        // Определяем ориентацию
+        
         boolean horizontal = true;
         if (placedTiles.size() > 1) {
             int[] secondPos = sortedTiles.get(1).getValue();
@@ -406,12 +403,12 @@ public class GameController {
 
     private boolean validateTilePlacement() {
         if (placedTiles.size() < 2) {
-            return true; // Одна фишка - допустимо
+            return true; 
         }
 
         List<int[]> positions = new ArrayList<>(placedTiles.values());
 
-        // Проверяем, все ли фишки в одной строке
+        
         boolean sameRow = true;
         int firstRow = positions.get(0)[0];
         for (int i = 1; i < positions.size(); i++) {
@@ -421,7 +418,7 @@ public class GameController {
             }
         }
 
-        // Проверяем, все ли фишки в одном столбце
+        
         boolean sameCol = true;
         int firstCol = positions.get(0)[1];
         for (int i = 1; i < positions.size(); i++) {
@@ -432,24 +429,24 @@ public class GameController {
         }
 
         if (!sameRow && !sameCol) {
-            return false; // Фишки не на одной линии
+            return false; 
         }
 
-        // Проверяем, что фишки расположены последовательно
+        
         if (sameRow) {
-            // Сортируем по столбцам
+            
             positions.sort((a, b) -> Integer.compare(a[1], b[1]));
             for (int i = 1; i < positions.size(); i++) {
                 if (positions.get(i)[1] != positions.get(i-1)[1] + 1) {
-                    return false; // Пропуски между фишками
+                    return false; 
                 }
             }
-        } else { // sameCol
-            // Сортируем по строкам
+        } else { 
+            
             positions.sort((a, b) -> Integer.compare(a[0], b[0]));
             for (int i = 1; i < positions.size(); i++) {
                 if (positions.get(i)[0] != positions.get(i-1)[0] + 1) {
-                    return false; // Пропуски между фишками
+                    return false; 
                 }
             }
         }
@@ -495,7 +492,7 @@ public class GameController {
             exchangeButton.setDisable(true);
             selectedTilesForExchange.clear();
 
-            // Снимаем выделение с фишек
+            
             for (TileView tileView : tileViews) {
                 tileView.setSelected(false);
             }
@@ -527,14 +524,14 @@ public class GameController {
                 networkHandler.sendMessage(surrenderMsg);
                 statusLabel.setText("Вы сдались");
 
-                // Показываем сообщение о сдаче
+                
                 Alert info = new Alert(Alert.AlertType.INFORMATION);
                 info.setTitle("Игра завершена");
                 info.setHeaderText("Вы сдались");
                 info.setContentText("Игра завершена. Вы можете создать новую комнату или присоединиться к другой.");
                 info.showAndWait();
 
-                // Закрываем окно игры
+                
                 ((javafx.stage.Stage) surrenderButton.getScene().getWindow()).close();
             }
         }
@@ -554,7 +551,7 @@ public class GameController {
                 networkHandler.sendMessage(leaveMsg);
                 statusLabel.setText("Выход из комнаты...");
 
-                // Закрываем окно игры
+                
                 javafx.stage.Stage stage = (javafx.stage.Stage) leaveButton.getScene().getWindow();
                 stage.close();
             }
@@ -569,7 +566,7 @@ public class GameController {
 
         TileBag.Tile tile = event.getTile();
 
-        // Определяем клетку на доске, куда упала фишка
+        
         double cellX = event.getSceneX() - boardCanvas.getLayoutX();
         double cellY = event.getSceneY() - boardCanvas.getLayoutY();
 
@@ -577,7 +574,7 @@ public class GameController {
         int row = (int) (cellY / 40);
 
         if (row >= 0 && row < 15 && col >= 0 && col < 15) {
-            // Проверяем, свободна ли клетка
+            
             if (model.getGameState().getCell(row, col).hasTile()) {
                 statusLabel.setText("Клетка уже занята!");
                 showAlert("Ошибка", "Клетка занята",
@@ -585,7 +582,7 @@ public class GameController {
                 return;
             }
 
-            // Проверяем, что это первый ход и фишка размещается на центральной клетке
+            
             GameState gameState = model.getGameState();
             if (isFirstMove(gameState) && !(row == 7 && col == 7)) {
                 statusLabel.setText("Первый ход должен начинаться с центральной клетки!");
@@ -594,22 +591,22 @@ public class GameController {
                 return;
             }
 
-            // Добавляем фишку в список размещенных
+            
             placedTiles.put(tile.getId(), new int[]{row, col});
 
-            // Удаляем фишку из полки
+            
             rackView.removeTile(tile.getId());
 
-            // Обновляем предпросмотр на доске
+            
             boardCanvas.setDraggedTile(tile);
 
             statusLabel.setText("Фишка '" + Character.toUpperCase(tile.getLetter()) +
                     "' размещена в [" + (char)('A' + col) + "," + (row + 1) + "]");
 
-            // Активируем кнопку отправки хода
+            
             submitButton.setDisable(false);
 
-            // Убираем фишку из выбранных для обмена, если она была выбрана
+            
             selectedTilesForExchange.remove(tile.getId());
         } else {
             statusLabel.setText("Фишка '" + Character.toUpperCase(tile.getLetter()) + "' возвращена на полку");
@@ -617,7 +614,7 @@ public class GameController {
     }
 
     private boolean isFirstMove(GameState gameState) {
-        // Проверяем, пуста ли доска (первый ход)
+        
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
                 if (gameState.getCell(i, j).hasTile()) {
@@ -633,16 +630,16 @@ public class GameController {
             return;
         }
 
-        // Получаем координаты клика относительно полки
+        
         double clickX = event.getX();
         double clickY = event.getY();
 
-        // Находим фишку, по которой кликнули
+        
         TileView clickedTile = null;
         for (TileView tileView : tileViews) {
             double tileX = tileView.getLayoutX();
             double tileY = tileView.getLayoutY();
-            double tileSize = 50; // Размер фишки
+            double tileSize = 50; 
 
             if (clickX >= tileX && clickX <= tileX + tileSize &&
                     clickY >= tileY && clickY <= tileY + tileSize) {
@@ -652,14 +649,14 @@ public class GameController {
         }
 
         if (clickedTile != null && event.getClickCount() == 2) {
-            // Двойной клик - выбираем/снимаем выделение для обмена
+            
             String tileId = clickedTile.getTile().getId();
             if (selectedTilesForExchange.contains(tileId)) {
                 selectedTilesForExchange.remove(tileId);
                 clickedTile.setSelected(false);
                 statusLabel.setText("Фишка снята с обмена");
             } else {
-                // Проверяем, что фишка не размещена на доске
+                
                 if (!placedTiles.containsKey(tileId)) {
                     selectedTilesForExchange.add(tileId);
                     clickedTile.setSelected(true);
@@ -669,7 +666,7 @@ public class GameController {
                 }
             }
 
-            // Обновляем состояние кнопки обмена
+            
             exchangeButton.setDisable(selectedTilesForExchange.isEmpty());
         }
     }
@@ -689,22 +686,22 @@ public class GameController {
     private void handleGameFinished() {
         GameState gameState = model.getGameState();
         if (gameState.isGameFinished()) {
-            // Отключаем все кнопки
+            
             submitButton.setDisable(true);
             skipButton.setDisable(true);
             exchangeButton.setDisable(true);
             surrenderButton.setDisable(true);
 
-            // Останавливаем таймер
+            
             if (gameTimer != null) {
                 gameTimer.stop();
             }
 
-            // Показываем сообщение об окончании игры
+            
             Alert gameOverAlert = new Alert(Alert.AlertType.INFORMATION);
             gameOverAlert.setTitle("Игра завершена");
 
-            // Находим победителя
+            
             Player winner = gameState.getPlayers().stream()
                     .max(Comparator.comparingInt(Player::getScore))
                     .orElse(null);
@@ -734,12 +731,12 @@ public class GameController {
         alert.showAndWait();
     }
 
-    // Метод для обновления списка фишек (вызывается из RackView)
+    
     public void updateTileViews(List<TileView> views) {
         this.tileViews = views;
     }
 
-    // Метод для отмены хода (возврат всех фишек на полку)
+    
     @FXML
     private void handleCancelMove() {
         if (!placedTiles.isEmpty()) {
@@ -749,7 +746,7 @@ public class GameController {
             confirm.setContentText("Все размещенные фишки вернутся на полку.");
 
             if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
-                // Возвращаем все фишки на полку
+                
                 for (String tileId : placedTiles.keySet()) {
                     TileBag.Tile tile = getTileById(tileId);
                     if (tile != null) {

@@ -1,5 +1,3 @@
-// scrabble/client/controller/MainController.java
-
 package scrabble.client.controller;
 
 import javafx.fxml.FXML;

@@ -1,5 +1,3 @@
-// scrabble/client/controller/LobbyController.java
-
 package scrabble.client.controller;
 
 import javafx.application.Platform;
@@ -12,31 +10,47 @@ import javafx.stage.Stage;
 import scrabble.client.model.ClientModel;
 import scrabble.client.network.ClientNetworkHandler;
 import scrabble.protocol.Message;
-import scrabble.protocol.MessageType;
 import scrabble.protocol.ProtocolParser;
 
-import java.io.IOException;
-
 public class LobbyController {
-    @FXML private TextField playerNameField;
-    @FXML private TextField serverAddressField;
-    @FXML private TextField serverPortField;
-    @FXML private Button connectButton;
-    @FXML private Button disconnectButton;
-    @FXML private Label statusLabel;
-    @FXML private TextField newRoomNameField;
-    @FXML private ComboBox<String> maxPlayersCombo;
-    @FXML private Button createRoomButton;
-    @FXML private ListView<String> roomsListView;
-    @FXML private Button joinRoomButton;
-    @FXML private Label currentRoomLabel;
-    @FXML private ListView<String> playersListView;
-    @FXML private Button readyButton;
-    @FXML private Button leaveRoomButton;
-    @FXML private Button startGameButton;
-    @FXML private TextArea chatArea;
-    @FXML private TextField chatInputField;
-    @FXML private Button sendChatButton;
+    @FXML
+    private TextField playerNameField;
+    @FXML
+    private TextField serverAddressField;
+    @FXML
+    private TextField serverPortField;
+    @FXML
+    private Button connectButton;
+    @FXML
+    private Button disconnectButton;
+    @FXML
+    private Label statusLabel;
+    @FXML
+    private TextField newRoomNameField;
+    @FXML
+    private ComboBox<String> maxPlayersCombo;
+    @FXML
+    private Button createRoomButton;
+    @FXML
+    private ListView<String> roomsListView;
+    @FXML
+    private Button joinRoomButton;
+    @FXML
+    private Label currentRoomLabel;
+    @FXML
+    private ListView<String> playersListView;
+    @FXML
+    private Button readyButton;
+    @FXML
+    private Button leaveRoomButton;
+    @FXML
+    private Button startGameButton;
+    @FXML
+    private TextArea chatArea;
+    @FXML
+    private TextField chatInputField;
+    @FXML
+    private Button sendChatButton;
 
     private ClientModel model;
     private ClientNetworkHandler networkHandler;
@@ -132,7 +146,7 @@ public class LobbyController {
     private void handleJoinRoom() {
         String selectedRoom = roomsListView.getSelectionModel().getSelectedItem();
         if (selectedRoom != null) {
-            // Извлекаем ID комнаты из строки
+
             String[] parts = selectedRoom.split(" - ");
             if (parts.length > 0) {
                 String roomId = parts[0];
